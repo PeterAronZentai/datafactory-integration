@@ -1,0 +1,95 @@
+{
+	"name": "Excel1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "3months_data_set",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "3months_data_set.xlsx",
+				"container": "audits"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Order",
+				"type": "String"
+			},
+			{
+				"name": "Client",
+				"type": "String"
+			},
+			{
+				"name": "Visit",
+				"type": "String"
+			},
+			{
+				"name": "Site",
+				"type": "String"
+			},
+			{
+				"name": "Premises Name",
+				"type": "String"
+			},
+			{
+				"name": "Address1",
+				"type": "String"
+			},
+			{
+				"name": "Address2",
+				"type": "String"
+			},
+			{
+				"name": "Address3",
+				"type": "String"
+			},
+			{
+				"name": "City",
+				"type": "String"
+			},
+			{
+				"name": "Post Code",
+				"type": "String"
+			},
+			{
+				"name": "Item to order",
+				"type": "String"
+			},
+			{
+				"name": "Actual Visit Date",
+				"type": "String"
+			},
+			{
+				"name": "Actual Visit Time",
+				"type": "String"
+			},
+			{
+				"name": "AM / PM",
+				"type": "String"
+			},
+			{
+				"name": "Pass-Fail",
+				"type": "String"
+			},
+			{
+				"name": "Pass-Fail2",
+				"type": "String"
+			},
+			{
+				"name": "Abort Reason",
+				"type": "String"
+			},
+			{
+				"name": "Extra Site 1",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

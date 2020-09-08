@@ -1,0 +1,77 @@
+{
+	"name": "Clients",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "internal_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "logo",
+				"type": "nvarchar"
+			},
+			{
+				"name": "footer",
+				"type": "nvarchar"
+			},
+			{
+				"name": "client_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sage_reference",
+				"type": "nvarchar"
+			},
+			{
+				"name": "manager_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "contract_expiry",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "store_locator",
+				"type": "nvarchar"
+			},
+			{
+				"name": "status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "created_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "modified_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "entity_source",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Clients"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
