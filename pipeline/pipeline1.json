@@ -696,7 +696,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select Store, newid() UniqueId from @{pipeline().parameters.TransferTableName} GROUP BY Store",
+							"value": "select Site, newid() UniqueId from @{pipeline().parameters.TransferTableName} GROUP BY Site",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
