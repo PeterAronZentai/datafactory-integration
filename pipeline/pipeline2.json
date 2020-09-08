@@ -25,7 +25,7 @@
           "sink": {
             "type": "AzureSqlSink",
             "preCopyScript": {
-              "value": "IF OBJECT_ID('@{pipeline().parameters.TransferTableName}') IS NOT NULL truncate table @{pipeline().parameters.TransferTableName}",
+              "value": "IF OBJECT_ID('@{pipeline().parameters.TransferTableName}') IS NOT NULL \n  TRUNCATE TABLE @{pipeline().parameters.TransferTableName}\n",
               "type": "Expression"
             },
             "tableOption": "autoCreate",
