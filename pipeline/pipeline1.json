@@ -696,7 +696,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "select Site, newid() UniqueId from @{pipeline().parameters.TransferTableName} GROUP BY Site",
+							"value": "select [Site], (select top 1 id from clients where clients.internal_id = @{pipeline().parameters.TransferTableName}.Client) clientId, newid() UniqueId  from @{pipeline().parameters.TransferTableName} GROUP BY [Site], [Client]",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
