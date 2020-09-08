@@ -1359,7 +1359,7 @@
 							"sink": {
 								"type": "AzureSqlSink",
 								"preCopyScript": {
-									"value": "truncate table @{pipeline().parameters.TransferTableName}",
+									"value": "drop table if exists  @{pipeline().parameters.TransferTableName}",
 									"type": "Expression"
 								},
 								"tableOption": "autoCreate",
