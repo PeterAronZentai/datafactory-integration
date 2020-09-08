@@ -1395,7 +1395,7 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "select [Order], max([Item To Order]) item_to_order, \n(select top 1 id from clients where clients.internal_id = historic_3m_importing.Client) clientId,\nnewid() UniqueId \nfrom @{pipeline().parameters.TransferTableName}\nGROUP BY [Order], [Client]",
+									"value": "select [Order], max([Item To Order]) item_to_order, \n(select top 1 id from clients where clients.internal_id = @{pipeline().parameters.TransferTableName}.Client) clientId,\nnewid() UniqueId \nfrom @{pipeline().parameters.TransferTableName}\nGROUP BY [Order], [Client]",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
