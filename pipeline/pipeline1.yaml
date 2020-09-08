@@ -34,11 +34,11 @@
                 source: 
                   name: "Order"
                   type: "String"
-                  physicalType: "String"
+                  physicalType: varchar
                 sink: 
                   name: "Order"
                   type: "String"
-                  physicalType: "varchar"
+                  physicalType: varchar
 
               - 
                 source: 
@@ -363,11 +363,11 @@
                 source: 
                   name: "Order"
                   type: "String"
-                  physicalType: "varchar"
+                  physicalType: "nvarchar"
                 sink: 
                   name: "Order"
                   type: "String"
-                  physicalType: "varchar"
+                  physicalType: "nvarchar"
               - 
                 source: 
                   name: "UniqueId"
