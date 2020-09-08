@@ -22,7 +22,8 @@
           sink: 
             type: "AzureSqlSink"
             preCopyScript: 
-              value: drop table if exists  @{pipeline().parameters.TransferTableName}
+              value: IF OBJECT_ID('@{pipeline().parameters.TransferTableName}') IS NOT NULL truncate table @{pipeline().parameters.TransferTableName}
+              # -- drop table if exists  @{pipeline().parameters.TransferTableName}
               type: "Expression"
             tableOption: "autoCreate"
             disableMetricsCollection: false
