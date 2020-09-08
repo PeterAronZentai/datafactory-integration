@@ -1,5 +1,5 @@
 ---
-  name: import-historic
+  name: pipeline2
   properties: 
     activities: 
       - 
