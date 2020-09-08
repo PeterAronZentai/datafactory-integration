@@ -674,11 +674,11 @@
 				]
 			},
 			{
-				"name": "Put Clients into Warehouse",
+				"name": "Put Sites into Warehouse",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Process Excel Upload",
+						"activity": "Put Clients into Warehouse",
 						"dependencyConditions": [
 							"Succeeded"
 						]
