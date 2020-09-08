@@ -674,7 +674,7 @@
 				]
 			},
 			{
-				"name": "Put Sites into Warehouse",
+				"name": "Collect New Sites",
 				"type": "Copy",
 				"dependsOn": [
 					{
