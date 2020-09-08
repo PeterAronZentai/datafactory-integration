@@ -488,12 +488,12 @@
                 "source": {
                   "name": "Order",
                   "type": "String",
-                  "physicalType": "nvarchar"
+                  "physicalType": "varchar"
                 },
                 "sink": {
                   "name": "Order",
                   "type": "String",
-                  "physicalType": "nvarchar"
+                  "physicalType": "varchar"
                 }
               },
               {
