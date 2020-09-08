@@ -1172,6 +1172,16 @@
 											"name": "UniqueId",
 											"type": "Guid"
 										}
+									},
+									{
+										"source": {
+											"name": "clientId",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "ClientId"
+										}
 									}
 								],
 								"typeConversion": true,
