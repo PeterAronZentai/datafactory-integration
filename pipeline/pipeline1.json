@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Process Excel Upload",
+				"name": "Process Excel Upload...",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
