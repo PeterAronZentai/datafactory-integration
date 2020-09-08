@@ -43,7 +43,8 @@
                 },
                 "sink": {
                   "name": "Order",
-                  "type": "String"
+                  "type": "String",
+                  "physicalType": "varchar"
                 }
               },
               {

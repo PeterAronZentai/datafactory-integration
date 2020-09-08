@@ -38,6 +38,8 @@
                 sink: 
                   name: "Order"
                   type: "String"
+                  physicalType: "varchar"
+
               - 
                 source: 
                   name: "Client"
@@ -191,6 +193,7 @@
               TableName: 
                 value: "@pipeline().parameters.TransferTableName"
                 type: "Expression"
+
       - 
         name: "Collect New Clients"
         type: "Copy"
