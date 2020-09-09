@@ -593,9 +593,18 @@
                   name: Address1
               -
                 source: 
+                  name: Address2
+                sink:
+                  name: Address2
+              -
+                source: 
+                  name: City
+                sink: 
                   name: City
               -
                 source: 
+                  name: Post Code
+                sink: 
                   name: Post Code
               
             typeConversion: true
