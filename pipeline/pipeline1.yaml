@@ -608,6 +608,11 @@
                   name: City
                 sink: 
                   name: City
+              - 
+                source: 
+                  name: Premises Name
+                sink: 
+                  name: Premises Name
               -
                 source: 
                   name: Post Code
