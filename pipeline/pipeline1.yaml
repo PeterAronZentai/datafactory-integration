@@ -600,6 +600,11 @@
                   name: Address2
               -
                 source: 
+                  name: Address3
+                sink:
+                  name: Address3
+              -
+                source: 
                   name: City
                 sink: 
                   name: City
@@ -608,6 +613,11 @@
                   name: Post Code
                 sink: 
                   name: Post Code
+              -
+                source: 
+                  name: Address3
+                sink:
+                  name: Address3
               
             typeConversion: true
             typeConversionSettings: 

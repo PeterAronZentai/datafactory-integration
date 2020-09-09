@@ -763,6 +763,14 @@
               },
               {
                 "source": {
+                  "name": "Address3"
+                },
+                "sink": {
+                  "name": "Address3"
+                }
+              },
+              {
+                "source": {
                   "name": "City"
                 },
                 "sink": {
@@ -775,6 +783,14 @@
                 },
                 "sink": {
                   "name": "Post Code"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address3"
+                },
+                "sink": {
+                  "name": "Address3"
                 }
               }
             ],
