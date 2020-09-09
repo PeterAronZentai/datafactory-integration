@@ -363,6 +363,102 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Sites')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "internal_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address_1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address_2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address_3",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "post_code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "county",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "directions",
+						"type": "nvarchar"
+					},
+					{
+						"name": "approving_notes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "client_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "created_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "modified_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "entity_source",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Sites"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/azure_dw')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2185,6 +2281,105 @@
 						]
 					},
 					{
+						"name": "Put Sites into Warehouse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Collect New Sites",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"additionalColumns": [
+									{
+										"name": "Source",
+										"value": "Import"
+									}
+								],
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from Sites where entity_source = 'Import'",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Site",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Source"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "sites_importing"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Sites",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
 						"name": "If DoSomething",
 						"type": "IfCondition",
 						"dependsOn": [
@@ -2303,7 +2498,8 @@
 				"[concat(variables('factoryId'), '/datasets/azure_dw_importing')]",
 				"[concat(variables('factoryId'), '/datasets/azure_dw_importing_noparam')]",
 				"[concat(variables('factoryId'), '/datasets/Clients')]",
-				"[concat(variables('factoryId'), '/datasets/Orders')]"
+				"[concat(variables('factoryId'), '/datasets/Orders')]",
+				"[concat(variables('factoryId'), '/datasets/Sites')]"
 			]
 		},
 		{
