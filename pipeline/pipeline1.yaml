@@ -3,8 +3,8 @@
   properties: 
     activities: 
       - 
-        name: "Process Excel Upload"
-        type: "Copy"
+        name: Process Excel Upload
+        type: Copy
         dependsOn: []
         policy: 
           timeout: "6.00:00:00"
@@ -517,12 +517,39 @@
             type: "AzureSqlSource"
             sqlReaderQuery: 
               value: |
-                select 
-                  [Site], 
-                  (select top 1 id from clients where clients.internal_id = @{pipeline().parameters.TransferTableName}.Client) clientId, 
-                  newid() UniqueId  
-                from @{pipeline().parameters.TransferTableName} 
-                GROUP BY [Site], [Client]
+                WITH 
+                  unique_site_references AS (
+                    SELECT 
+                      DISTINCT Site 
+                    FROM
+                      -- historic_zed3_importing 
+                      @{pipeline().parameters.TransferTableName}	
+                    -- WHERE
+                      -- Site not in select distinct internal_id from Sites
+                  )
+                SELECT 
+                  s.SITE,
+                  newid() UniqueId,
+                  a.Client,
+                  (select top 1 c.id from Clients c where c.internal_id = a.Client) ClientId,
+                  a.Address1,
+                  a.Address2,
+                  a.Address3,
+                  a.[Premises Name],
+                  a.City,
+                  a.[Post Code]
+                FROM 
+                  unique_site_references s
+                CROSS APPLY (
+                  SELECT
+                    top 1 i.* 
+                  FROM
+                    -- historic_zed3_importing 
+                    @{pipeline().parameters.TransferTableName}
+                    i
+                  WHERE
+                    i.Site = s.Site
+                ) a
               type: "Expression"
             queryTimeout: "02:00:00"
             partitionOption: "None"
