@@ -1817,6 +1817,14 @@
 									},
 									{
 										"source": {
+											"name": "ClientId"
+										},
+										"sink": {
+											"name": "client_id"
+										}
+									},
+									{
+										"source": {
 											"name": "Source"
 										},
 										"sink": {
