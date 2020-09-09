@@ -697,7 +697,7 @@
           "source": {
             "type": "AzureSqlSource",
             "sqlReaderQuery": {
-              "value": "WITH \n  unique_site_references AS (\n    SELECT \n      DISTINCT Site \n    FROM\n      -- historic_zed3_importing \n      @{pipeline().parameters.TransferTableName}\t\n    -- WHERE\n      -- Site not in select distinct internal_id from Sites\n  )\nSELECT \n  s.SITE,\n  newid() UniqueId,\n  a.Client,\n  (select top 1 c.id from Clients c where c.internal_id = a.Client) ClientId,\n  a.Address1,\n  a.Address2,\n  a.Address3,\n  a.[Premises Name],\n  a.City,\n  a.[Post Code]\nFROM \n  unique_site_references s\nCROSS APPLY (\n  SELECT\n    top 1 i.* \n  FROM\n    -- historic_zed3_importing \n    @{pipeline().parameters.TransferTableName}\n    i\n  WHERE\n    i.Site = s.Site\n) a\n",
+              "value": "WITH \n  unique_site_references AS (\n    SELECT \n      DISTINCT Site \n    FROM\n      -- historic_zed3_importing \n      @{pipeline().parameters.TransferTableName}\t\n    -- WHERE\n      -- Site not in select distinct internal_id from Sites\n  )\nSELECT \n  s.Site,\n  newid() UniqueId,\n  a.Client,\n  (select top 1 c.id from Clients c where c.internal_id = a.Client) ClientId,\n  a.Address1,\n  a.Address2,\n  a.Address3,\n  a.[Premises Name],\n  a.City,\n  a.[Post Code]\nFROM \n  unique_site_references s\nCROSS APPLY (\n  SELECT\n    top 1 i.* \n  FROM\n    -- historic_zed3_importing \n    @{pipeline().parameters.TransferTableName}\n    i\n  WHERE\n    i.Site = s.Site\n) a\n",
               "type": "Expression"
             },
             "queryTimeout": "02:00:00",
@@ -737,7 +737,7 @@
               },
               {
                 "source": {
-                  "name": "clientId",
+                  "name": "ClientId",
                   "type": "String",
                   "physicalType": "nvarchar"
                 },
@@ -872,7 +872,7 @@
     "parameters": {
       "TransferTableName": {
         "type": "string",
-        "defaultValue": "historic_3m_importing"
+        "defaultValue": "historic_importing"
       },
       "Feature": {
         "type": "bool",

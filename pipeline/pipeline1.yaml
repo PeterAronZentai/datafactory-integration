@@ -497,6 +497,7 @@
           - 
             referenceName: "Orders"
             type: "DatasetReference"
+# SITES
       - 
         name: "Collect New Sites"
         type: "Copy"
@@ -528,7 +529,7 @@
                       -- Site not in select distinct internal_id from Sites
                   )
                 SELECT 
-                  s.SITE,
+                  s.Site,
                   newid() UniqueId,
                   a.Client,
                   (select top 1 c.id from Clients c where c.internal_id = a.Client) ClientId,
@@ -580,7 +581,7 @@
                   type: "Guid"
               - 
                 source: 
-                  name: "clientId"
+                  name: "ClientId"
                   type: "String"
                   physicalType: "nvarchar"
                 sink: 
@@ -674,7 +675,7 @@
     parameters: 
       TransferTableName: 
         type: "string"
-        defaultValue: "historic_3m_importing"
+        defaultValue: historic_importing
       Feature: 
         type: "bool"
         defaultValue: false
