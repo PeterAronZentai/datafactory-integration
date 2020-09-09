@@ -646,6 +646,9 @@
               - 
                 name: "Source"
                 value: "Import"
+              - 
+                name: "SiteStatus"
+                value: "active"
             queryTimeout: "02:00:00"
             partitionOption: "None"
           sink: 
@@ -681,7 +684,36 @@
                   name: "entity_source"
                   type: "String"
                   physicalType: "varchar"
-
+              - 
+                source: 
+                  name: "Address1"
+                sink: 
+                  name: "address_1"
+              - 
+                source: 
+                  name: "Address2"
+                sink: 
+                  name: "address_2"
+              - 
+                source: 
+                  name: "Post Code"
+                sink: 
+                  name: "post_code"
+              - 
+                source: 
+                  name: "City"
+                sink: 
+                  name: "city"
+              - 
+                source: 
+                  name: Premises Name
+                sink: 
+                  name: name
+              - 
+                source: 
+                  name: SiteStatus
+                sink: 
+                  name: status
 
             typeConversion: true
             typeConversionSettings: 
