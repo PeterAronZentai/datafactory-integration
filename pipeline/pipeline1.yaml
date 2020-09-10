@@ -912,6 +912,9 @@
               - 
                 name: "Source"
                 value: "Import"
+              - 
+                name: AuditStatus
+                value: approved
             queryTimeout: "02:00:00"
             partitionOption: "None"
           sink: 
@@ -966,6 +969,11 @@
                   name: Item to order
                 sink: 
                   name: item_to_order
+              - 
+                source: 
+                  name: AuditStatus
+                sink: 
+                  name: status
 
             typeConversion: true
             typeConversionSettings: 

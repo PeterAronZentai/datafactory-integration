@@ -1162,6 +1162,10 @@
               {
                 "name": "Source",
                 "value": "Import"
+              },
+              {
+                "name": "AuditStatus",
+                "value": "approved"
               }
             ],
             "queryTimeout": "02:00:00",
@@ -1242,6 +1246,14 @@
                 },
                 "sink": {
                   "name": "item_to_order"
+                }
+              },
+              {
+                "source": {
+                  "name": "AuditStatus"
+                },
+                "sink": {
+                  "name": "status"
                 }
               }
             ],
