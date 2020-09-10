@@ -843,6 +843,11 @@
                   name: Pass-Fail
               -
                 source: 
+                  name: Pass-Fail2
+                sink:
+                  name: Pass-Fail2
+              -
+                source: 
                   name: UpdateStatus
                 sink:
                   name: UpdateStatus
@@ -851,8 +856,17 @@
                   name: VisitDate
                 sink:
                   name: VisitDate
- 
-              
+              -
+                source: 
+                  name: Item to order
+                sink:
+                  name: Item to order
+              -
+                source: 
+                  name: Abort Reason
+                sink:
+                  name: Abort Reason
+
             typeConversion: true
             typeConversionSettings: 
               allowDataTruncation: true
@@ -925,6 +939,26 @@
                   name: "Source"
                 sink: 
                   name: "entity_source"
+              - 
+                source: 
+                  name: "OrderId"
+                sink: 
+                  name: "order_id"
+              - 
+                source: 
+                  name: "SiteId"
+                sink: 
+                  name: "site_id"
+              - 
+                source: 
+                  name: VisitDate
+                sink: 
+                  name: date_of_visit
+              - 
+                source: 
+                  name: Pass-Fail
+                sink: 
+                  name: survey_result
 
             typeConversion: true
             typeConversionSettings: 
