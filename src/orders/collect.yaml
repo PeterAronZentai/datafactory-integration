@@ -1,0 +1,79 @@
+name: "Collect New Orders"
+type: "Copy"
+dependsOn: 
+  - 
+    activity: "Put Clients into Warehouse"
+    dependencyConditions: 
+      - "Succeeded"
+policy: 
+  timeout: "7.00:00:00"
+  retry: 0
+  retryIntervalInSeconds: 30
+  secureOutput: false
+  secureInput: false
+userProperties: []
+typeProperties: 
+  source: 
+    type: "AzureSqlSource"
+    sqlReaderQuery: 
+      value: "select [Order], max([Item To Order]) item_to_order, \n(select top 1 id from clients where clients.internal_id = @{pipeline().parameters.TransferTableName}.Client) clientId,\nnewid() UniqueId \nfrom @{pipeline().parameters.TransferTableName}\nGROUP BY [Order], [Client]"
+      type: "Expression"
+    queryTimeout: "02:00:00"
+    partitionOption: "None"
+  sink: 
+    type: "AzureSqlSink"
+    preCopyScript: "drop table if exists orders_importing"
+    tableOption: "autoCreate"
+    disableMetricsCollection: false
+  enableStaging: false
+  translator: 
+    type: "TabularTranslator"
+    mappings: 
+      - 
+        source: 
+          name: "Order"
+          type: "String"
+          physicalType: "nvarchar"
+        sink: 
+          name: "Order"
+          type: "String"
+          physicalType: "nvarchar"
+      - 
+        source: 
+          name: "UniqueId"
+          type: "Guid"
+          physicalType: "uniqueidentifier"
+        sink: 
+          name: "UniqueId"
+          type: "Guid"
+          physicalType: "uniqueidentifier"
+      - 
+        source: 
+          name: "item_to_order"
+          type: "String"
+          physicalType: "nvarchar"
+        sink: 
+          name: "item_to_order"
+          type: "String"
+          physicalType: "nvarchar"
+      - 
+        source: 
+          name: "clientId"
+          type: "String"
+          physicalType: "nvarchar"
+        sink: 
+          name: "ClientId"
+    typeConversion: true
+    typeConversionSettings: 
+      allowDataTruncation: true
+      treatBooleanAsNumber: false
+inputs: 
+  - 
+    referenceName: "azure_dw_importing_noparam"
+    type: "DatasetReference"
+outputs: 
+  - 
+    referenceName: "azure_dw_importing"
+    type: "DatasetReference"
+    parameters: 
+      TableName: "orders_importing"

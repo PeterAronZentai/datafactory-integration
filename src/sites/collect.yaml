@@ -1,0 +1,100 @@
+name: Collect New Sites
+type: Copy
+dependsOn: 
+  - 
+    activity: "Put Clients into Warehouse"
+    dependencyConditions: 
+      - "Succeeded"
+policy: 
+  timeout: "6.00:00:00"
+  retry: 0
+  retryIntervalInSeconds: 30
+  secureOutput: false
+  secureInput: false
+userProperties: []
+typeProperties: 
+  source: 
+    type: "AzureSqlSource"
+    sqlReaderQuery: 
+      value: !!inc/file sites/collect.sql
+      type: "Expression"
+    queryTimeout: "02:00:00"
+    partitionOption: "None"
+  sink: 
+    type: "AzureSqlSink"
+    preCopyScript: |
+      drop table if exists dbo.sites_importing
+    tableOption: "autoCreate"
+    disableMetricsCollection: false
+  enableStaging: false
+  translator: 
+    type: "TabularTranslator"
+    mappings: 
+      - 
+        source: 
+          name: "Site"
+          type: "String"
+          physicalType: "nvarchar"
+        sink: 
+          name: "Site"
+          type: "String"
+      - 
+        source: 
+          name: "UniqueId"
+          type: "Guid"
+          physicalType: "uniqueidentifier"
+        sink: 
+          name: "UniqueId"
+          type: "Guid"
+      - 
+        source: 
+          name: "ClientId"
+          type: "String"
+          physicalType: "nvarchar"
+        sink: 
+          name: "ClientId"
+      -
+        source: 
+          name: Address1
+        sink:
+          name: Address1
+      -
+        source: 
+          name: Address2
+        sink:
+          name: Address2
+      -
+        source: 
+          name: Address3
+        sink:
+          name: Address3
+      -
+        source: 
+          name: City
+        sink: 
+          name: City
+      - 
+        source: 
+          name: Premises Name
+        sink: 
+          name: Premises Name
+      -
+        source: 
+          name: Post Code
+        sink: 
+          name: Post Code
+      
+    typeConversion: true
+    typeConversionSettings: 
+      allowDataTruncation: true
+      treatBooleanAsNumber: false
+inputs: 
+  - 
+    referenceName: "azure_dw_importing_noparam"
+    type: "DatasetReference"
+outputs: 
+  - 
+    referenceName: "azure_dw_importing"
+    type: "DatasetReference"
+    parameters: 
+      TableName: "sites_importing"

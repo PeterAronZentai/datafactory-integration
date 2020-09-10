@@ -1,0 +1,30 @@
+  name: pipe
+  properties: 
+    activities:
+      - !!inc/file incoming/process-excel-file.yaml
+
+      - !!inc/file clients/collect.yaml
+      - !!inc/file clients/update-warehouse.yaml
+
+# Orders
+      - !!inc/file orders/collect.yaml
+      - !!inc/file orders/update-warehouse.yaml
+# Sites
+      - !!inc/file sites/collect.yaml
+      - !!inc/file sites/update-warehouse.yaml
+
+# Audits/Visits
+      - !!inc/file audits/collect.yaml
+      - !!inc/file audits/update-warehouse.yaml
+
+    parameters: 
+      TransferTableName: 
+        type: "string"
+        defaultValue: historic_importing
+      Feature: 
+        type: "bool"
+        defaultValue: false
+    annotations: []
+    lastPublishTime: "2020-09-07T15:15:49Z"
+  type: "Microsoft.DataFactory/factories/pipelines"
+

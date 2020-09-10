@@ -1,0 +1,103 @@
+name: Put Audits into Warehouse
+type: Copy
+dependsOn: 
+  - 
+    activity: Collect New Audits
+    dependencyConditions: 
+      - Succeeded
+policy: 
+  timeout: "7.00:00:00"
+  retry: 0
+  retryIntervalInSeconds: 30
+  secureOutput: false
+  secureInput: false
+userProperties: []
+typeProperties: 
+  source: 
+    type: "AzureSqlSource"
+
+    sqlReaderQuery: 
+      value: |
+        select * from audits_importing where UpdateStatus = 'new'
+      type: "Expression"
+    additionalColumns: 
+      - 
+        name: "Source"
+        value: "Import"
+      - 
+        name: AuditStatus
+        value: approved
+    queryTimeout: "02:00:00"
+    partitionOption: "None"
+  sink: 
+    type: "AzureSqlSink"
+    preCopyScript: delete from Audits where entity_source = 'Import'
+    disableMetricsCollection: false
+  enableStaging: false
+  translator: 
+    type: "TabularTranslator"
+    mappings: 
+      - 
+        source: 
+          name: "UniqueId"
+          type: "Guid"
+          physicalType: "uniqueidentifier"
+        sink: 
+          name: "id"
+          type: "String"
+          physicalType: "nvarchar"
+      - 
+        source: 
+          name: Visit
+        sink: 
+          name: internal_id
+      - 
+        source: 
+          name: "Source"
+        sink: 
+          name: "entity_source"
+      - 
+        source: 
+          name: "OrderId"
+        sink: 
+          name: "order_id"
+      - 
+        source: 
+          name: "SiteId"
+        sink: 
+          name: "site_id"
+      - 
+        source: 
+          name: VisitDate
+        sink: 
+          name: date_of_visit
+      - 
+        source: 
+          name: Pass-Fail
+        sink: 
+          name: survey_result
+      - 
+        source: 
+          name: Item to order
+        sink: 
+          name: item_to_order
+      - 
+        source: 
+          name: AuditStatus
+        sink: 
+          name: status
+
+    typeConversion: true
+    typeConversionSettings: 
+      allowDataTruncation: true
+      treatBooleanAsNumber: false
+inputs: 
+  - 
+    referenceName: "azure_dw_importing"
+    type: "DatasetReference"
+    parameters: 
+      TableName: "audits_importing"
+outputs: 
+  - 
+    referenceName: "Audits"
+    type: "DatasetReference"

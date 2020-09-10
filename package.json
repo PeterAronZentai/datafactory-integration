@@ -1,0 +1,27 @@
+{
+  "name": "datafactory-integration",
+  "version": "1.0.0",
+  "description": "XXX",
+  "main": "build.js",
+  "dependencies": {
+    "js-yaml": "^3.14.0",
+    "nodemon": "^2.0.4",
+    "yaml-include": "^1.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev": "nodemon -e yaml --exec \"node build  src/pipe.yaml > ./pipeline/pipe.json\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PeterAronZentai/datafactory-integration.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PeterAronZentai/datafactory-integration/issues"
+  },
+  "homepage": "https://github.com/PeterAronZentai/datafactory-integration#readme"
+}

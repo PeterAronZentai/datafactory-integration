@@ -1,0 +1,46 @@
+name: "Collect New Clients"
+type: "Copy"
+dependsOn: 
+  - 
+    activity: "Process Excel Upload"
+    dependencyConditions: 
+      - "Succeeded"
+policy: 
+  timeout: "6.00:00:00"
+  retry: 0
+  retryIntervalInSeconds: 30
+  secureOutput: false
+  secureInput: false
+userProperties: []
+typeProperties: 
+  source: 
+    type: "AzureSqlSource"
+    sqlReaderQuery: 
+      value: !!inc/file clients/collect.sql
+      type: Expression
+    queryTimeout: 02:00:00
+    partitionOption: None
+  sink: 
+    type: AzureSqlSink
+    preCopyScript: |
+      drop table if exists dbo.clients_importing
+    tableOption: autoCreate
+    disableMetricsCollection: false
+  enableStaging: false
+  translator: 
+    type: "TabularTranslator"
+    mappings: !!inc/file clients/collect-mapping.yaml
+    typeConversion: true
+    typeConversionSettings: 
+      allowDataTruncation: true
+      treatBooleanAsNumber: false
+inputs: 
+  - 
+    referenceName: "azure_dw_importing_noparam"
+    type: "DatasetReference"
+outputs: 
+  - 
+    referenceName: "azure_dw_importing"
+    type: "DatasetReference"
+    parameters: 
+      TableName: "clients_importing"

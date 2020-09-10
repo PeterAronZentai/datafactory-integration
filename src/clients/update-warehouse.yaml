@@ -1,0 +1,70 @@
+name: "Put Clients into Warehouse"
+type: "Copy"
+dependsOn: 
+  - 
+    activity: "Collect New Clients"
+    dependencyConditions: 
+      - "Succeeded"
+policy: 
+  timeout: "7.00:00:00"
+  retry: 0
+  retryIntervalInSeconds: 30
+  secureOutput: false
+  secureInput: false
+userProperties: []
+typeProperties: 
+  source: 
+    type: "AzureSqlSource"
+    additionalColumns: 
+      - 
+        name: "Source"
+        value: "Import"
+    queryTimeout: "02:00:00"
+    partitionOption: "None"
+  sink: 
+    type: "AzureSqlSink"
+    preCopyScript: "delete from Clients where entity_source = 'Import'"
+    disableMetricsCollection: false
+  enableStaging: false
+  translator: 
+    type: "TabularTranslator"
+    mappings: 
+      - 
+        source: 
+          name: "Client"
+          type: "String"
+          physicalType: "nvarchar"
+        sink: 
+          name: "internal_id"
+          type: "String"
+          physicalType: "nvarchar"
+      - 
+        source: 
+          name: "UniqueId"
+          type: "Guid"
+          physicalType: "uniqueidentifier"
+        sink: 
+          name: "id"
+          type: "String"
+          physicalType: "nvarchar"
+      - 
+        source: 
+          name: "Source"
+        sink: 
+          name: "entity_source"
+          type: "String"
+          physicalType: "varchar"
+    typeConversion: true
+    typeConversionSettings: 
+      allowDataTruncation: true
+      treatBooleanAsNumber: false
+inputs: 
+  - 
+    referenceName: "azure_dw_importing"
+    type: "DatasetReference"
+    parameters: 
+      TableName: "clients_importing"
+outputs: 
+  - 
+    referenceName: "Clients"
+    type: "DatasetReference"

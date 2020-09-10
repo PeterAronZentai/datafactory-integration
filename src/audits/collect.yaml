@@ -1,0 +1,131 @@
+name: "Collect New Audits"
+type: "Copy"
+dependsOn: 
+  - 
+    activity: "Put Sites into Warehouse"
+    dependencyConditions: 
+      - "Succeeded"
+  - 
+    activity: "Put Orders into Warehouse"
+    dependencyConditions: 
+      - "Succeeded"
+policy: 
+  timeout: "6.00:00:00"
+  retry: 0
+  retryIntervalInSeconds: 30
+  secureOutput: false
+  secureInput: false
+userProperties: []
+typeProperties: 
+  source: 
+    type: "AzureSqlSource"
+    sqlReaderQuery: 
+      value: |
+        select 
+          hi.Visit,
+          isnull(audits.id, newid()) UniqueId,
+          case 
+            when audits.id is null then 'new'
+            else 'update'
+          end UpdateStatus,
+          convert(
+            datetimeoffset,
+            concat(hi.[Actual Visit Date], ' ', cast(cast(hi.[Actual Visit Time] as time) as varchar(8)), [AM / PM]),
+            103) VisitDate,
+          sites.id SiteId,
+          orders.id OrderId,
+          [Pass-Fail],
+          [Pass-Fail2],
+          [Abort Reason],
+          [Item to order]
+        from 
+          @{pipeline().parameters.TransferTableName} hi
+            OUTER APPLY (
+              select a.id from Audits a where a.internal_id = hi.Visit
+            ) audits
+            OUTER APPLY (
+              select s.id from Sites s where s.internal_id = hi.Site
+            ) sites
+            OUTER APPLY (
+              select o.id from Orders o where o.internal_id = hi.[Order]
+            ) orders	
+
+      type: "Expression"
+    queryTimeout: "02:00:00"
+    partitionOption: "None"
+  sink: 
+    type: "AzureSqlSink"
+    preCopyScript: |
+      drop table if exists dbo.audits_importing
+      delete from Audits where entity_source = 'Import'
+    tableOption: "autoCreate"
+    disableMetricsCollection: false
+  enableStaging: false
+  translator: 
+    type: "TabularTranslator"
+    mappings: 
+      - 
+        source: 
+          name: Visit
+        sink: 
+          name: Visit
+      - 
+        source: 
+          name: UniqueId
+        sink: 
+          name: UniqueId
+      - 
+        source: 
+          name: SiteId
+        sink: 
+          name: SiteId
+      -
+        source: 
+          name: OrderId
+        sink:
+          name: OrderId
+      -
+        source: 
+          name: Pass-Fail
+        sink:
+          name: Pass-Fail
+      -
+        source: 
+          name: Pass-Fail2
+        sink:
+          name: Pass-Fail2
+      -
+        source: 
+          name: UpdateStatus
+        sink:
+          name: UpdateStatus
+      -
+        source: 
+          name: VisitDate
+        sink:
+          name: VisitDate
+      -
+        source: 
+          name: Item to order
+        sink:
+          name: Item to order
+      -
+        source: 
+          name: Abort Reason
+        sink:
+          name: Abort Reason
+
+    typeConversion: true
+    typeConversionSettings: 
+      allowDataTruncation: true
+      treatBooleanAsNumber: false
+inputs: 
+  - 
+    referenceName: "azure_dw_importing_noparam"
+    type: "DatasetReference"
+outputs: 
+  - 
+    referenceName: azure_dw_importing
+    type: DatasetReference
+    parameters: 
+      TableName: audits_importing

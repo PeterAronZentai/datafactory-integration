@@ -1,0 +1,1298 @@
+{
+  "name": "pipe",
+  "properties": {
+    "activities": [
+      {
+        "name": "Process Excel Upload",
+        "type": "Copy",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "6.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "ExcelSource",
+            "storeSettings": {
+              "type": "AzureBlobStorageReadSettings",
+              "recursive": true
+            }
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": {
+              "value": "IF OBJECT_ID('@{pipeline().parameters.TransferTableName}') IS NOT NULL \n  TRUNCATE TABLE @{pipeline().parameters.TransferTableName}\n",
+              "type": "Expression"
+            },
+            "tableOption": "autoCreate",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "Order",
+                  "type": "String",
+                  "physicalType": "varchar"
+                },
+                "sink": {
+                  "name": "Order",
+                  "type": "String",
+                  "physicalType": "varchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "Client",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Client",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Visit",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Visit",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Site",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Site",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Premises Name",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Premises Name",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address1",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Address1",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address2",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Address2",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address3",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Address3",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "City",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "City",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Post Code",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Post Code",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Item to order",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Item to order",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Actual Visit Date",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Actual Visit Date",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Actual Visit Time",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Actual Visit Time",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "AM / PM",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "AM / PM",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Pass-Fail",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Pass-Fail",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Pass-Fail2",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Pass-Fail2",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Abort Reason",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Abort Reason",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "Extra Site 1",
+                  "type": "String",
+                  "physicalType": "String"
+                },
+                "sink": {
+                  "name": "Extra Site 1",
+                  "type": "String"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false,
+              "dateTimeFormat": "dd/MM/yyyy"
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "Excel1",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": {
+                "value": "@pipeline().parameters.TransferTableName",
+                "type": "Expression"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Collect New Clients",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Process Excel Upload",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "6.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderQuery": {
+              "value": "select Client, newid() UniqueId from @{pipeline().parameters.TransferTableName} GROUP BY Client",
+              "type": "Expression"
+            },
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": "drop table if exists dbo.clients_importing\n",
+            "tableOption": "autoCreate",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "Client",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "Client",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "UniqueId",
+                  "type": "Guid",
+                  "physicalType": "uniqueidentifier"
+                },
+                "sink": {
+                  "name": "UniqueId",
+                  "type": "Guid"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "azure_dw_importing_noparam",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": "clients_importing"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Put Clients into Warehouse",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Collect New Clients",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "7.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "additionalColumns": [
+              {
+                "name": "Source",
+                "value": "Import"
+              }
+            ],
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": "delete from Clients where entity_source = 'Import'",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "Client",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "internal_id",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "UniqueId",
+                  "type": "Guid",
+                  "physicalType": "uniqueidentifier"
+                },
+                "sink": {
+                  "name": "id",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "Source"
+                },
+                "sink": {
+                  "name": "entity_source",
+                  "type": "String",
+                  "physicalType": "varchar"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": "clients_importing"
+            }
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "Clients",
+            "type": "DatasetReference"
+          }
+        ]
+      },
+      {
+        "name": "Collect New Orders",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Put Clients into Warehouse",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "7.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderQuery": {
+              "value": "select [Order], max([Item To Order]) item_to_order, \n(select top 1 id from clients where clients.internal_id = @{pipeline().parameters.TransferTableName}.Client) clientId,\nnewid() UniqueId \nfrom @{pipeline().parameters.TransferTableName}\nGROUP BY [Order], [Client]",
+              "type": "Expression"
+            },
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": "drop table if exists orders_importing",
+            "tableOption": "autoCreate",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "Order",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "Order",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "UniqueId",
+                  "type": "Guid",
+                  "physicalType": "uniqueidentifier"
+                },
+                "sink": {
+                  "name": "UniqueId",
+                  "type": "Guid",
+                  "physicalType": "uniqueidentifier"
+                }
+              },
+              {
+                "source": {
+                  "name": "item_to_order",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "item_to_order",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "clientId",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "ClientId"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "azure_dw_importing_noparam",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": "orders_importing"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Put Orders into Warehouse",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Collect New Orders",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "7.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "additionalColumns": [
+              {
+                "name": "Source",
+                "value": "Import"
+              }
+            ],
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": "delete from Orders where entity_source = 'Import'",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "Order",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "internal_id",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "UniqueId",
+                  "type": "Guid",
+                  "physicalType": "uniqueidentifier"
+                },
+                "sink": {
+                  "name": "id",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "Source"
+                },
+                "sink": {
+                  "name": "entity_source",
+                  "type": "String",
+                  "physicalType": "varchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "item_to_order",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "item_to_order",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "ClientId"
+                },
+                "sink": {
+                  "name": "client_id",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": "orders_importing"
+            }
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "Orders",
+            "type": "DatasetReference"
+          }
+        ]
+      },
+      {
+        "name": "Collect New Sites",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Put Clients into Warehouse",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "6.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderQuery": {
+              "value": "WITH unique_site_references AS ( SELECT DISTINCT Site FROM -- historic_zed3_importing @{pipeline().parameters.TransferTableName} -- WHERE -- Site not in select distinct internal_id from Sites ) SELECT s.Site, newid() UniqueId, (select top 1 c.id from Clients c where c.internal_id = a.Client) ClientId, a.Client, a.Address1, a.Address2, a.Address3, a.[Premises Name], a.City, a.[Post Code] FROM unique_site_references s CROSS APPLY ( SELECT top 1 i.* FROM -- historic_zed3_importing @{pipeline().parameters.TransferTableName} i WHERE i.Site = s.Site ) a",
+              "type": "Expression"
+            },
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": "drop table if exists dbo.sites_importing\n",
+            "tableOption": "autoCreate",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "Site",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "Site",
+                  "type": "String"
+                }
+              },
+              {
+                "source": {
+                  "name": "UniqueId",
+                  "type": "Guid",
+                  "physicalType": "uniqueidentifier"
+                },
+                "sink": {
+                  "name": "UniqueId",
+                  "type": "Guid"
+                }
+              },
+              {
+                "source": {
+                  "name": "ClientId",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "ClientId"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address1"
+                },
+                "sink": {
+                  "name": "Address1"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address2"
+                },
+                "sink": {
+                  "name": "Address2"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address3"
+                },
+                "sink": {
+                  "name": "Address3"
+                }
+              },
+              {
+                "source": {
+                  "name": "City"
+                },
+                "sink": {
+                  "name": "City"
+                }
+              },
+              {
+                "source": {
+                  "name": "Premises Name"
+                },
+                "sink": {
+                  "name": "Premises Name"
+                }
+              },
+              {
+                "source": {
+                  "name": "Post Code"
+                },
+                "sink": {
+                  "name": "Post Code"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "azure_dw_importing_noparam",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": "sites_importing"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Put Sites into Warehouse",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Collect New Sites",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "7.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "additionalColumns": [
+              {
+                "name": "Source",
+                "value": "Import"
+              },
+              {
+                "name": "SiteStatus",
+                "value": "active"
+              }
+            ],
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": "delete from Sites where entity_source = 'Import'",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "UniqueId",
+                  "type": "Guid",
+                  "physicalType": "uniqueidentifier"
+                },
+                "sink": {
+                  "name": "id",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "Site",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                },
+                "sink": {
+                  "name": "internal_id",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "ClientId"
+                },
+                "sink": {
+                  "name": "client_id"
+                }
+              },
+              {
+                "source": {
+                  "name": "Source"
+                },
+                "sink": {
+                  "name": "entity_source",
+                  "type": "String",
+                  "physicalType": "varchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address1"
+                },
+                "sink": {
+                  "name": "address_1"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address2"
+                },
+                "sink": {
+                  "name": "address_2"
+                }
+              },
+              {
+                "source": {
+                  "name": "Address3"
+                },
+                "sink": {
+                  "name": "address_3"
+                }
+              },
+              {
+                "source": {
+                  "name": "Post Code"
+                },
+                "sink": {
+                  "name": "post_code"
+                }
+              },
+              {
+                "source": {
+                  "name": "City"
+                },
+                "sink": {
+                  "name": "city"
+                }
+              },
+              {
+                "source": {
+                  "name": "Premises Name"
+                },
+                "sink": {
+                  "name": "name"
+                }
+              },
+              {
+                "source": {
+                  "name": "SiteStatus"
+                },
+                "sink": {
+                  "name": "status"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": "sites_importing"
+            }
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "Sites",
+            "type": "DatasetReference"
+          }
+        ]
+      },
+      {
+        "name": "Collect New Audits",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Put Sites into Warehouse",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Put Orders into Warehouse",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "6.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderQuery": {
+              "value": "select \n  hi.Visit,\n  isnull(audits.id, newid()) UniqueId,\n  case \n    when audits.id is null then 'new'\n    else 'update'\n  end UpdateStatus,\n  convert(\n    datetimeoffset,\n    concat(hi.[Actual Visit Date], ' ', cast(cast(hi.[Actual Visit Time] as time) as varchar(8)), [AM / PM]),\n    103) VisitDate,\n  sites.id SiteId,\n  orders.id OrderId,\n  [Pass-Fail],\n  [Pass-Fail2],\n  [Abort Reason],\n  [Item to order]\nfrom \n  @{pipeline().parameters.TransferTableName} hi\n    OUTER APPLY (\n      select a.id from Audits a where a.internal_id = hi.Visit\n    ) audits\n    OUTER APPLY (\n      select s.id from Sites s where s.internal_id = hi.Site\n    ) sites\n    OUTER APPLY (\n      select o.id from Orders o where o.internal_id = hi.[Order]\n    ) orders\t\n",
+              "type": "Expression"
+            },
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": "drop table if exists dbo.audits_importing\ndelete from Audits where entity_source = 'Import'\n",
+            "tableOption": "autoCreate",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "Visit"
+                },
+                "sink": {
+                  "name": "Visit"
+                }
+              },
+              {
+                "source": {
+                  "name": "UniqueId"
+                },
+                "sink": {
+                  "name": "UniqueId"
+                }
+              },
+              {
+                "source": {
+                  "name": "SiteId"
+                },
+                "sink": {
+                  "name": "SiteId"
+                }
+              },
+              {
+                "source": {
+                  "name": "OrderId"
+                },
+                "sink": {
+                  "name": "OrderId"
+                }
+              },
+              {
+                "source": {
+                  "name": "Pass-Fail"
+                },
+                "sink": {
+                  "name": "Pass-Fail"
+                }
+              },
+              {
+                "source": {
+                  "name": "Pass-Fail2"
+                },
+                "sink": {
+                  "name": "Pass-Fail2"
+                }
+              },
+              {
+                "source": {
+                  "name": "UpdateStatus"
+                },
+                "sink": {
+                  "name": "UpdateStatus"
+                }
+              },
+              {
+                "source": {
+                  "name": "VisitDate"
+                },
+                "sink": {
+                  "name": "VisitDate"
+                }
+              },
+              {
+                "source": {
+                  "name": "Item to order"
+                },
+                "sink": {
+                  "name": "Item to order"
+                }
+              },
+              {
+                "source": {
+                  "name": "Abort Reason"
+                },
+                "sink": {
+                  "name": "Abort Reason"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "azure_dw_importing_noparam",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": "audits_importing"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Put Audits into Warehouse",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Collect New Audits",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "7.00:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderQuery": {
+              "value": "select * from audits_importing where UpdateStatus = 'new'\n",
+              "type": "Expression"
+            },
+            "additionalColumns": [
+              {
+                "name": "Source",
+                "value": "Import"
+              },
+              {
+                "name": "AuditStatus",
+                "value": "approved"
+              }
+            ],
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "sink": {
+            "type": "AzureSqlSink",
+            "preCopyScript": "delete from Audits where entity_source = 'Import'",
+            "disableMetricsCollection": false
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "mappings": [
+              {
+                "source": {
+                  "name": "UniqueId",
+                  "type": "Guid",
+                  "physicalType": "uniqueidentifier"
+                },
+                "sink": {
+                  "name": "id",
+                  "type": "String",
+                  "physicalType": "nvarchar"
+                }
+              },
+              {
+                "source": {
+                  "name": "Visit"
+                },
+                "sink": {
+                  "name": "internal_id"
+                }
+              },
+              {
+                "source": {
+                  "name": "Source"
+                },
+                "sink": {
+                  "name": "entity_source"
+                }
+              },
+              {
+                "source": {
+                  "name": "OrderId"
+                },
+                "sink": {
+                  "name": "order_id"
+                }
+              },
+              {
+                "source": {
+                  "name": "SiteId"
+                },
+                "sink": {
+                  "name": "site_id"
+                }
+              },
+              {
+                "source": {
+                  "name": "VisitDate"
+                },
+                "sink": {
+                  "name": "date_of_visit"
+                }
+              },
+              {
+                "source": {
+                  "name": "Pass-Fail"
+                },
+                "sink": {
+                  "name": "survey_result"
+                }
+              },
+              {
+                "source": {
+                  "name": "Item to order"
+                },
+                "sink": {
+                  "name": "item_to_order"
+                }
+              },
+              {
+                "source": {
+                  "name": "AuditStatus"
+                },
+                "sink": {
+                  "name": "status"
+                }
+              }
+            ],
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        },
+        "inputs": [
+          {
+            "referenceName": "azure_dw_importing",
+            "type": "DatasetReference",
+            "parameters": {
+              "TableName": "audits_importing"
+            }
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "Audits",
+            "type": "DatasetReference"
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "TransferTableName": {
+        "type": "string",
+        "defaultValue": "historic_importing"
+      },
+      "Feature": {
+        "type": "bool",
+        "defaultValue": false
+      }
+    },
+    "annotations": [],
+    "lastPublishTime": "2020-09-07T15:15:49Z"
+  },
+  "type": "Microsoft.DataFactory/factories/pipelines"
+}
