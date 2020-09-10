@@ -793,7 +793,7 @@
                   [Abort Reason],
                   [Item to order]
                 from 
-                  historic_importing hi
+                  @{pipeline().parameters.TransferTableName} hi
                     OUTER APPLY (
                       select a.id from Audits a where a.internal_id = hi.Visit
                     ) audits
@@ -887,6 +887,11 @@
         typeProperties: 
           source: 
             type: "AzureSqlSource"
+
+            sqlReaderQuery: 
+              value: |
+                select * from audits_importing where UpdateStatus = 'new'
+              type: "Expression"
             additionalColumns: 
               - 
                 name: "Source"
