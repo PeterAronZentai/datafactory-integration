@@ -2090,6 +2090,10 @@
 									{
 										"name": "Source",
 										"value": "Import"
+									},
+									{
+										"name": "AuditStatus",
+										"value": "approved"
 									}
 								],
 								"sqlReaderQuery": {
@@ -2174,6 +2178,14 @@
 										},
 										"sink": {
 											"name": "item_to_order"
+										}
+									},
+									{
+										"source": {
+											"name": "AuditStatus"
+										},
+										"sink": {
+											"name": "status"
 										}
 									}
 								],
