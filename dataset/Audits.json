@@ -1,0 +1,180 @@
+{
+	"name": "Audits",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "internal_id",
+				"type": "varchar"
+			},
+			{
+				"name": "query_notes",
+				"type": "nvarchar"
+			},
+			{
+				"name": "query_category",
+				"type": "nvarchar"
+			},
+			{
+				"name": "survey_result",
+				"type": "nvarchar"
+			},
+			{
+				"name": "visit_info",
+				"type": "nvarchar"
+			},
+			{
+				"name": "submitted_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "approval_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "deadline_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "date_of_visit",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "purchase_cost",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "allowance",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "mileage",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "entrance_charge",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "travel_expenses",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "travel_expenses_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "travel_expenses_description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "reclaimable_expenses",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "reclaimable_expenses_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "reclaimable_expenses_description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "paid",
+				"type": "bit"
+			},
+			{
+				"name": "batched",
+				"type": "bit"
+			},
+			{
+				"name": "payroll_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "pay_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "email_note",
+				"type": "nvarchar"
+			},
+			{
+				"name": "status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "order_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "site_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "approved_by_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "auditor_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "item_to_order",
+				"type": "nvarchar"
+			},
+			{
+				"name": "auditor_instructions",
+				"type": "nvarchar"
+			},
+			{
+				"name": "auditor_pay_per_audit",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "approving_notes",
+				"type": "nvarchar"
+			},
+			{
+				"name": "created_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "modified_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "entity_source",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Audits"
+		}
+	}
+}
