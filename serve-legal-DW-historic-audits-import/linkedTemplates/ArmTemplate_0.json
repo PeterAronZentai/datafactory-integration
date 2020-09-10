@@ -2492,7 +2492,7 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "select \n  hi.Visit,\n  isnull(audits.id, audits.id) UniqueId,\n  case \n    when audits.id is null then 'new'\n    else 'update'\n  end UpdateStatus,\n  convert(\n    datetimeoffset,\n    concat(hi.[Actual Visit Date], ' ', cast(cast(hi.[Actual Visit Time] as time) as varchar(8)), [AM / PM]),\n    103) VisitDate,\n  sites.id SiteId,\n  orders.id OrderId,\n  [Pass-Fail],\n  [Pass-Fail2],\n  [Abort Reason],\n  [Item to order]\nfrom \n  historic_importing hi\n    OUTER APPLY (\n      select a.id from Audits a where a.internal_id = hi.Visit\n    ) audits\n    OUTER APPLY (\n      select s.id from Sites s where s.internal_id = hi.Site\n    ) sites\n    OUTER APPLY (\n      select o.id from Orders o where o.internal_id = hi.[Order]\n    ) orders\t\n",
+									"value": "select \n  hi.Visit,\n  isnull(audits.id, newid()) UniqueId,\n  case \n    when audits.id is null then 'new'\n    else 'update'\n  end UpdateStatus,\n  convert(\n    datetimeoffset,\n    concat(hi.[Actual Visit Date], ' ', cast(cast(hi.[Actual Visit Time] as time) as varchar(8)), [AM / PM]),\n    103) VisitDate,\n  sites.id SiteId,\n  orders.id OrderId,\n  [Pass-Fail],\n  [Pass-Fail2],\n  [Abort Reason],\n  [Item to order]\nfrom \n  historic_importing hi\n    OUTER APPLY (\n      select a.id from Audits a where a.internal_id = hi.Visit\n    ) audits\n    OUTER APPLY (\n      select s.id from Sites s where s.internal_id = hi.Site\n    ) sites\n    OUTER APPLY (\n      select o.id from Orders o where o.internal_id = hi.[Order]\n    ) orders\t\n",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -2554,6 +2554,14 @@
 										},
 										"sink": {
 											"name": "UpdateStatus"
+										}
+									},
+									{
+										"source": {
+											"name": "VisitDate"
+										},
+										"sink": {
+											"name": "VisitDate"
 										}
 									}
 								],
