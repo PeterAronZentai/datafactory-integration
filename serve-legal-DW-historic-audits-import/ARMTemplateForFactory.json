@@ -1915,7 +1915,7 @@
 						]
 					},
 					{
-						"name": "Collect New Visits",
+						"name": "Collect New Audits",
 						"type": "Copy",
 						"dependsOn": [
 							{
@@ -1943,7 +1943,7 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "select \n  hi.Visit,\n  isnull(audits.id, newid()) UniqueId,\n  case \n    when audits.id is null then 'new'\n    else 'update'\n  end UpdateStatus,\n  convert(\n    datetimeoffset,\n    concat(hi.[Actual Visit Date], ' ', cast(cast(hi.[Actual Visit Time] as time) as varchar(8)), [AM / PM]),\n    103) VisitDate,\n  sites.id SiteId,\n  orders.id OrderId,\n  [Pass-Fail],\n  [Pass-Fail2],\n  [Abort Reason],\n  [Item to order]\nfrom \n  historic_importing hi\n    OUTER APPLY (\n      select a.id from Audits a where a.internal_id = hi.Visit\n    ) audits\n    OUTER APPLY (\n      select s.id from Sites s where s.internal_id = hi.Site\n    ) sites\n    OUTER APPLY (\n      select o.id from Orders o where o.internal_id = hi.[Order]\n    ) orders\t\n",
+									"value": "select \n  hi.Visit,\n  isnull(audits.id, newid()) UniqueId,\n  case \n    when audits.id is null then 'new'\n    else 'update'\n  end UpdateStatus,\n  convert(\n    datetimeoffset,\n    concat(hi.[Actual Visit Date], ' ', cast(cast(hi.[Actual Visit Time] as time) as varchar(8)), [AM / PM]),\n    103) VisitDate,\n  sites.id SiteId,\n  orders.id OrderId,\n  [Pass-Fail],\n  [Pass-Fail2],\n  [Abort Reason],\n  [Item to order]\nfrom \n  @{pipeline().parameters.TransferTableName} hi\n    OUTER APPLY (\n      select a.id from Audits a where a.internal_id = hi.Visit\n    ) audits\n    OUTER APPLY (\n      select s.id from Sites s where s.internal_id = hi.Site\n    ) sites\n    OUTER APPLY (\n      select o.id from Orders o where o.internal_id = hi.[Order]\n    ) orders\t\n",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -2037,6 +2037,103 @@
 								"parameters": {
 									"TableName": "audits_importing"
 								}
+							}
+						]
+					},
+					{
+						"name": "Put Audits into Warehouse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Collect New Audits",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"additionalColumns": [
+									{
+										"name": "Source",
+										"value": "Import"
+									}
+								],
+								"sqlReaderQuery": {
+									"value": "select * from audits_importing where UpdateStatus = 'new'\n",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from Audits where entity_source = 'Import'",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Visit"
+										},
+										"sink": {
+											"name": "internal_id"
+										}
+									},
+									{
+										"source": {
+											"name": "Source"
+										},
+										"sink": {
+											"name": "entity_source"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "audits_importing"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Audits",
+								"type": "DatasetReference",
+								"parameters": {}
 							}
 						]
 					},
@@ -2160,7 +2257,193 @@
 				"[concat(variables('factoryId'), '/datasets/azure_dw_importing_noparam')]",
 				"[concat(variables('factoryId'), '/datasets/Clients')]",
 				"[concat(variables('factoryId'), '/datasets/Orders')]",
-				"[concat(variables('factoryId'), '/datasets/Sites')]"
+				"[concat(variables('factoryId'), '/datasets/Sites')]",
+				"[concat(variables('factoryId'), '/datasets/Audits')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Audits')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "internal_id",
+						"type": "varchar"
+					},
+					{
+						"name": "query_notes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "query_category",
+						"type": "nvarchar"
+					},
+					{
+						"name": "survey_result",
+						"type": "nvarchar"
+					},
+					{
+						"name": "visit_info",
+						"type": "nvarchar"
+					},
+					{
+						"name": "submitted_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "approval_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "deadline_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "date_of_visit",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "purchase_cost",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "allowance",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "mileage",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "entrance_charge",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "travel_expenses",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "travel_expenses_type",
+						"type": "nvarchar"
+					},
+					{
+						"name": "travel_expenses_description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "reclaimable_expenses",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "reclaimable_expenses_type",
+						"type": "nvarchar"
+					},
+					{
+						"name": "reclaimable_expenses_description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "paid",
+						"type": "bit"
+					},
+					{
+						"name": "batched",
+						"type": "bit"
+					},
+					{
+						"name": "payroll_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "pay_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "email_note",
+						"type": "nvarchar"
+					},
+					{
+						"name": "status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "order_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "site_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "approved_by_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "auditor_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "item_to_order",
+						"type": "nvarchar"
+					},
+					{
+						"name": "auditor_instructions",
+						"type": "nvarchar"
+					},
+					{
+						"name": "auditor_pay_per_audit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "approving_notes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "created_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "modified_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "entity_source",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Audits"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
 			]
 		},
 		{
