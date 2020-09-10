@@ -1951,7 +1951,7 @@
 							},
 							"sink": {
 								"type": "AzureSqlSink",
-								"preCopyScript": "drop table if exists dbo.audits_importing",
+								"preCopyScript": "drop table if exists dbo.audits_importing\ndelete from Audits where entity_source = 'Import'\n",
 								"tableOption": "autoCreate",
 								"disableMetricsCollection": false
 							},
@@ -2001,6 +2001,14 @@
 									},
 									{
 										"source": {
+											"name": "Pass-Fail2"
+										},
+										"sink": {
+											"name": "Pass-Fail2"
+										}
+									},
+									{
+										"source": {
 											"name": "UpdateStatus"
 										},
 										"sink": {
@@ -2013,6 +2021,22 @@
 										},
 										"sink": {
 											"name": "VisitDate"
+										}
+									},
+									{
+										"source": {
+											"name": "Item to order"
+										},
+										"sink": {
+											"name": "Item to order"
+										}
+									},
+									{
+										"source": {
+											"name": "Abort Reason"
+										},
+										"sink": {
+											"name": "Abort Reason"
 										}
 									}
 								],
@@ -2110,6 +2134,38 @@
 										},
 										"sink": {
 											"name": "entity_source"
+										}
+									},
+									{
+										"source": {
+											"name": "OrderId"
+										},
+										"sink": {
+											"name": "order_id"
+										}
+									},
+									{
+										"source": {
+											"name": "SiteId"
+										},
+										"sink": {
+											"name": "site_id"
+										}
+									},
+									{
+										"source": {
+											"name": "VisitDate"
+										},
+										"sink": {
+											"name": "date_of_visit"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass-Fail"
+										},
+										"sink": {
+											"name": "survey_result"
 										}
 									}
 								],
