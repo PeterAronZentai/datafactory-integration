@@ -2167,6 +2167,14 @@
 										"sink": {
 											"name": "survey_result"
 										}
+									},
+									{
+										"source": {
+											"name": "Item to order"
+										},
+										"sink": {
+											"name": "item_to_order"
+										}
 									}
 								],
 								"typeConversion": true,
