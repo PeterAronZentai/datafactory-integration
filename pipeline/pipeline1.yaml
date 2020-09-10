@@ -776,7 +776,7 @@
               value: |
                 select 
                   hi.Visit,
-                  isnull(audits.id, audits.id) UniqueId,
+                  isnull(audits.id, newid()) UniqueId,
                   case 
                     when audits.id is null then 'new'
                     else 'update'
@@ -845,6 +845,11 @@
                   name: UpdateStatus
                 sink:
                   name: UpdateStatus
+              -
+                source: 
+                  name: VisitDate
+                sink:
+                  name: VisitDate
  
               
             typeConversion: true
