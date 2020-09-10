@@ -1020,7 +1020,7 @@
           },
           "sink": {
             "type": "AzureSqlSink",
-            "preCopyScript": "drop table if exists dbo.audits_importing",
+            "preCopyScript": "drop table if exists dbo.audits_importing\ndelete from Audits where entity_source = 'Import'\n",
             "tableOption": "autoCreate",
             "disableMetricsCollection": false
           },

@@ -809,7 +809,9 @@
             partitionOption: "None"
           sink: 
             type: "AzureSqlSink"
-            preCopyScript: "drop table if exists dbo.audits_importing"
+            preCopyScript: |
+              drop table if exists dbo.audits_importing
+              delete from Audits where entity_source = 'Import'
             tableOption: "autoCreate"
             disableMetricsCollection: false
           enableStaging: false
