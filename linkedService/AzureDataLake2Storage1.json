@@ -1,0 +1,10 @@
+{
+	"name": "AzureDataLake2Storage1",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://servelegaldwimportdev.dfs.core.windows.net"
+		}
+	}
+}
