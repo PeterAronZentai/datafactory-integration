@@ -23,25 +23,15 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "JsonSink",
 						"storeSettings": {
 							"type": "AzureDataLakeStoreWriteSettings"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+							"type": "JsonWriteSettings"
 						}
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
 				"inputs": [
 					{
@@ -51,44 +41,13 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "import_as_csv",
+						"referenceName": "import_as_json",
 						"type": "DatasetReference",
 						"parameters": {
-							"fname": "3m-utf8.csv"
+							"fname": "3m-utf8.json"
 						}
 					}
 				]
-			},
-			{
-				"name": "U-SQL1",
-				"type": "DataLakeAnalyticsU-SQL",
-				"dependsOn": [
-					{
-						"activity": "Copy data1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"scriptPath": "u-sql1/Unnamed",
-					"scriptLinkedService": {
-						"referenceName": "AzureDataLakeStore1",
-						"type": "LinkedServiceReference"
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeAnalytics1",
-					"type": "LinkedServiceReference"
-				}
 			}
 		],
 		"annotations": []
