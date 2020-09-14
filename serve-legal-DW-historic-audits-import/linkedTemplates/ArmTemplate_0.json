@@ -4572,6 +4572,7 @@
 						]
 					}
 				],
+				"concurrency": 1,
 				"annotations": []
 			},
 			"dependsOn": [
