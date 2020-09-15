@@ -3752,10 +3752,41 @@
 								"referenceName": "import_as_json",
 								"type": "DatasetReference",
 								"parameters": {
-									"fname": "3m-utf8.json"
+									"fname": "json.json"
 								}
 							}
 						]
+					},
+					{
+						"name": "U-SQL1",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "u-sql1/Unnamed",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"concurrency": 1,
@@ -3763,7 +3794,9 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Excel1')]",
-				"[concat(variables('factoryId'), '/datasets/import_as_json')]"
+				"[concat(variables('factoryId'), '/datasets/import_as_json')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeAnalytics1')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
 			]
 		},
 		{
@@ -4474,6 +4507,34 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/import_as_json')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"fname": {
+						"type": "string",
+						"defaultValue": "3m-utf8.json"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -4552,34 +4613,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/import_as_json')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"fname": {
-						"type": "string",
-						"defaultValue": "3m-utf8.json"
-					}
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureDataLakeStoreLocation"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
-			]
 		}
 	]
 }
