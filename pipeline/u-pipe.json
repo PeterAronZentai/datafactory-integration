@@ -45,7 +45,7 @@
 						"referenceName": "import_as_json",
 						"type": "DatasetReference",
 						"parameters": {
-							"fname": "3m-utf8.json"
+							"fname": "json.json"
 						}
 					}
 				]
