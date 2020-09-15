@@ -4909,7 +4909,28 @@
 									"filePattern": "arrayOfObjects"
 								}
 							},
-							"enableStaging": false
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id"
+										},
+										"sink": {
+											"path": "$['id']"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id"
+										},
+										"sink": {
+											"path": "$['internal_id']"
+										}
+									}
+								]
+							}
 						},
 						"inputs": [
 							{

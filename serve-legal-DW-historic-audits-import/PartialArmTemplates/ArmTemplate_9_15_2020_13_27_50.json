@@ -74,8 +74,7 @@
 						"inputs": [
 							{
 								"referenceName": "Clients",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -193,8 +192,7 @@
 						"inputs": [
 							{
 								"referenceName": "Sites",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -261,8 +259,7 @@
 						"inputs": [
 							{
 								"referenceName": "Orders",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -329,8 +326,7 @@
 						"inputs": [
 							{
 								"referenceName": "Audits",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
