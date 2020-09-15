@@ -297,7 +297,7 @@
 						"referenceName": "import_as_json",
 						"type": "DatasetReference",
 						"parameters": {
-							"fname": "/audits-json"
+							"fname": "/audit-ids.json"
 						}
 					}
 				]
