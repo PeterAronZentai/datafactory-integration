@@ -262,8 +262,7 @@
 						"inputs": [
 							{
 								"referenceName": "Excel1",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -351,8 +350,7 @@
 						"inputs": [
 							{
 								"referenceName": "azure_dw_importing_noparam",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -459,8 +457,7 @@
 						"outputs": [
 							{
 								"referenceName": "Clients",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -560,8 +557,7 @@
 						"inputs": [
 							{
 								"referenceName": "azure_dw_importing_noparam",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -690,8 +686,7 @@
 						"outputs": [
 							{
 								"referenceName": "Orders",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -825,8 +820,7 @@
 						"inputs": [
 							{
 								"referenceName": "azure_dw_importing_noparam",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1001,8 +995,7 @@
 						"outputs": [
 							{
 								"referenceName": "Sites",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -1142,8 +1135,7 @@
 						"inputs": [
 							{
 								"referenceName": "azure_dw_importing_noparam",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1300,8 +1292,7 @@
 						"outputs": [
 							{
 								"referenceName": "Audits",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -1388,8 +1379,7 @@
 									"inputs": [
 										{
 											"referenceName": "azure_dw_importing_noparam",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									],
 									"outputs": [
@@ -1419,97 +1409,119 @@
 				"annotations": [],
 				"lastPublishTime": "2020-09-07T15:15:49Z"
 			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Excel1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Excel1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "3 year data v1",
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "3 year data v3.xlsx",
+						"container": "audits"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Order",
+						"type": "String"
+					},
+					{
+						"name": "Client",
+						"type": "String"
+					},
+					{
+						"name": "Visit",
+						"type": "String"
+					},
+					{
+						"name": "Site",
+						"type": "String"
+					},
+					{
+						"name": "Premises Name",
+						"type": "String"
+					},
+					{
+						"name": "Address1",
+						"type": "String"
+					},
+					{
+						"name": "Address2",
+						"type": "String"
+					},
+					{
+						"name": "Address3",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "Post Code",
+						"type": "String"
+					},
+					{
+						"name": "Item to order",
+						"type": "String"
+					},
+					{
+						"name": "Actual Visit Date",
+						"type": "String"
+					},
+					{
+						"name": "Actual Visit Time",
+						"type": "String"
+					},
+					{
+						"name": "AM / PM",
+						"type": "String"
+					},
+					{
+						"name": "Pass-Fail",
+						"type": "String"
+					},
+					{
+						"name": "Pass-Fail2",
+						"type": "String"
+					},
+					{
+						"name": "Abort Reason",
+						"type": "String"
+					},
+					{
+						"name": "Extra Site 1",
+						"type": "String"
+					}
+				]
+			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/u-pipe')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/RestService1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true
-								}
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureDataLakeStoreWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings",
-									"filePattern": "arrayOfObjects"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "Excel1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "import_as_json",
-								"type": "DatasetReference",
-								"parameters": {
-									"fname": "json.json"
-								}
-							}
-						]
-					},
-					{
-						"name": "U-SQL1",
-						"type": "DataLakeAnalyticsU-SQL",
-						"dependsOn": [
-							{
-								"activity": "Copy data1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"scriptPath": "u-sql1/Unnamed",
-							"scriptLinkedService": {
-								"referenceName": "AzureDataLakeStore1",
-								"type": "LinkedServiceReference"
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "AzureDataLakeAnalytics1",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"concurrency": 1,
-				"annotations": []
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "https://index.hu",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
 			},
 			"dependsOn": []
 		}

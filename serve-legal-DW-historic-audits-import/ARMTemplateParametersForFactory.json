@@ -46,6 +46,9 @@
 		},
 		"AzureDataLakeStore1_properties_typeProperties_resourceGroupName": {
 			"value": "serve-legal-powerbi-dev"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"value": "https://index.hu"
 		}
 	}
 }
