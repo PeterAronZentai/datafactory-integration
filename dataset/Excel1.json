@@ -8,6 +8,7 @@
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
+			"sheetName": "3 year data v1",
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "3 year data v3.xlsx",
