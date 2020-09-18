@@ -8,10 +8,9 @@
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
-			"sheetName": "3months_data_set",
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "3months_data_set.xlsx",
+				"fileName": "3 year data v3.xlsx",
 				"container": "audits"
 			},
 			"firstRowAsHeader": true
