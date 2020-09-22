@@ -2,7 +2,7 @@
 	"name": "Audits",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "SQLDataWarehouseDev",
+			"referenceName": "SQLDataWarehouseDevAuth",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

@@ -2,7 +2,7 @@
 	"name": "Orders",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "SQLDataWarehouseDev",
+			"referenceName": "SQLDataWarehouseDevAuth",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
