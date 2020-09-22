@@ -1,0 +1,6 @@
+{
+	"name": "populate-staging-tables",
+	"properties": {
+		"annotations": []
+	}
+}
