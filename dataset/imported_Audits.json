@@ -2,7 +2,7 @@
 	"name": "imported_Audits",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureDataLakeStore1",
+			"referenceName": "AzureDataLakeStore1Auth",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
