@@ -13,6 +13,64 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/imported_Audits')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1Auth",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": "audits-to-pull.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "item_to_order",
+						"type": "String"
+					},
+					{
+						"name": "date_of_visit",
+						"type": "String"
+					},
+					{
+						"name": "survey_result",
+						"type": "String"
+					},
+					{
+						"name": "site_id",
+						"type": "String"
+					},
+					{
+						"name": "order_id",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "entity_source",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/imported_Clients')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -4822,6 +4880,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/imported_Clients')]",
 				"[concat(variables('factoryId'), '/datasets/staging_Clients')]",
+				"[concat(variables('factoryId'), '/datasets/imported_Audits')]",
 				"[concat(variables('factoryId'), '/datasets/staging_Audits')]",
 				"[concat(variables('factoryId'), '/datasets/imported_Sites')]",
 				"[concat(variables('factoryId'), '/datasets/staging_Sites')]"
@@ -4965,9 +5024,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "CustomIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
 							}
 						}
 					}

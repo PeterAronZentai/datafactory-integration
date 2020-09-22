@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
 		},
+		"AzureDataLakeStore1Auth_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataLakeStore1Auth'"
+		},
 		"AzureSqlDatabase1_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
@@ -30,10 +34,6 @@
 		"SQLDataWarehouseDevAuth_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehouseDevAuth'"
-		},
-		"AzureDataLakeStore1Auth_servicePrincipalKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataLakeStore1Auth'"
 		},
 		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 			"type": "string",
@@ -75,10 +75,6 @@
 			"type": "string",
 			"defaultValue": "serve-legal-powerbi-dev"
 		},
-		"RestService1_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://index.hu"
-		},
 		"AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri": {
 			"type": "string",
 			"defaultValue": "https://servelegalimportlake1dev.azuredatalakestore.net/webhdfs/v1"
@@ -98,6 +94,10 @@
 		"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
 			"type": "string",
 			"defaultValue": "serve-legal-powerbi-dev"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://index.hu"
 		}
 	},
 	"variables": {
@@ -288,9 +288,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "CustomIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
 							}
 						}
 					}
@@ -298,7 +298,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/CustomIntegrationRuntime')]"
 			]
 		},
 		{
@@ -4336,7 +4337,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDev",
+					"referenceName": "SQLDataWarehouseDevAuth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -4512,7 +4513,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDev')]"
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
 			]
 		},
 		{
@@ -4521,7 +4522,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDev",
+					"referenceName": "SQLDataWarehouseDevAuth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -4613,7 +4614,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDev')]"
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
 			]
 		},
 		{
@@ -4721,7 +4722,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDev",
+					"referenceName": "SQLDataWarehouseDevAuth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -4827,7 +4828,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDev')]"
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
 			]
 		},
 		{
@@ -4836,7 +4837,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDev",
+					"referenceName": "SQLDataWarehouseDevAuth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -4943,7 +4944,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDev')]"
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
 			]
 		},
 		{
@@ -5953,6 +5954,28 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStore1Auth')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDataLakeStore",
+				"typeProperties": {
+					"dataLakeStoreUri": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri')]",
+					"azureCloudType": "AzurePublic",
+					"servicePrincipalId": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStore1Auth_servicePrincipalKey')]"
+					},
+					"tenant": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_tenant')]",
+					"subscriptionId": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_subscriptionId')]",
+					"resourceGroupName": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -5989,6 +6012,38 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('SQLDataWarehouseDev_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLDataWarehouseDevAuth')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CustomIntegrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 30
+						}
+					}
 				}
 			},
 			"dependsOn": []
@@ -6040,41 +6095,6 @@
 				"[concat(variables('factoryId'), '/datasets/imported_Clients')]",
 				"[concat(variables('factoryId'), '/datasets/Clients')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SQLDataWarehouseDevAuth')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStore1Auth')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureDataLakeStore",
-				"typeProperties": {
-					"dataLakeStoreUri": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri')]",
-					"azureCloudType": "AzurePublic",
-					"servicePrincipalId": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalKey": {
-						"type": "SecureString",
-						"value": "[parameters('AzureDataLakeStore1Auth_servicePrincipalKey')]"
-					},
-					"tenant": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_tenant')]",
-					"subscriptionId": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_subscriptionId')]",
-					"resourceGroupName": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName')]"
-				}
-			},
-			"dependsOn": []
 		}
 	]
 }

@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
 		},
+		"AzureDataLakeStore1Auth_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataLakeStore1Auth'"
+		},
 		"AzureSqlDatabase1_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
@@ -30,10 +34,6 @@
 		"SQLDataWarehouseDevAuth_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehouseDevAuth'"
-		},
-		"AzureDataLakeStore1Auth_servicePrincipalKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataLakeStore1Auth'"
 		},
 		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 			"type": "string",
@@ -75,10 +75,6 @@
 			"type": "string",
 			"defaultValue": "serve-legal-powerbi-dev"
 		},
-		"RestService1_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://index.hu"
-		},
 		"AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri": {
 			"type": "string",
 			"defaultValue": "https://servelegalimportlake1dev.azuredatalakestore.net/webhdfs/v1"
@@ -98,6 +94,10 @@
 		"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
 			"type": "string",
 			"defaultValue": "serve-legal-powerbi-dev"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://index.hu"
 		},
 		"containerUri": {
 			"type": "string",
@@ -135,6 +135,9 @@
 					"AzureDataLakeStorage1_accountKey": {
 						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
 					},
+					"AzureDataLakeStore1Auth_servicePrincipalKey": {
+						"value": "[parameters('AzureDataLakeStore1Auth_servicePrincipalKey')]"
+					},
 					"AzureSqlDatabase1_connectionString": {
 						"value": "[parameters('AzureSqlDatabase1_connectionString')]"
 					},
@@ -143,9 +146,6 @@
 					},
 					"SQLDataWarehouseDevAuth_connectionString": {
 						"value": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
-					},
-					"AzureDataLakeStore1Auth_servicePrincipalKey": {
-						"value": "[parameters('AzureDataLakeStore1Auth_servicePrincipalKey')]"
 					},
 					"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 						"value": "[parameters('AzureDataLakeAnalytics1_properties_typeProperties_accountName')]"
@@ -177,9 +177,6 @@
 					"AzureDataLakeStore1_properties_typeProperties_resourceGroupName": {
 						"value": "[parameters('AzureDataLakeStore1_properties_typeProperties_resourceGroupName')]"
 					},
-					"RestService1_properties_typeProperties_url": {
-						"value": "[parameters('RestService1_properties_typeProperties_url')]"
-					},
 					"AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri": {
 						"value": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri')]"
 					},
@@ -194,6 +191,9 @@
 					},
 					"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
 						"value": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName')]"
+					},
+					"RestService1_properties_typeProperties_url": {
+						"value": "[parameters('RestService1_properties_typeProperties_url')]"
 					}
 				}
 			},

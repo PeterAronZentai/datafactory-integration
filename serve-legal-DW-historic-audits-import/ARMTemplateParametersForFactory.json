@@ -14,6 +14,9 @@
 		"AzureDataLakeStorage1_accountKey": {
 			"value": ""
 		},
+		"AzureDataLakeStore1Auth_servicePrincipalKey": {
+			"value": ""
+		},
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},
@@ -21,9 +24,6 @@
 			"value": ""
 		},
 		"SQLDataWarehouseDevAuth_connectionString": {
-			"value": ""
-		},
-		"AzureDataLakeStore1Auth_servicePrincipalKey": {
 			"value": ""
 		},
 		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
@@ -56,9 +56,6 @@
 		"AzureDataLakeStore1_properties_typeProperties_resourceGroupName": {
 			"value": "serve-legal-powerbi-dev"
 		},
-		"RestService1_properties_typeProperties_url": {
-			"value": "https://index.hu"
-		},
 		"AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri": {
 			"value": "https://servelegalimportlake1dev.azuredatalakestore.net/webhdfs/v1"
 		},
@@ -73,6 +70,9 @@
 		},
 		"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
 			"value": "serve-legal-powerbi-dev"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"value": "https://index.hu"
 		}
 	}
 }
