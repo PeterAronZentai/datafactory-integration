@@ -1,0 +1,38 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "serve-legal-DW-historic-audits-import"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStore1Auth')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDataLakeStore",
+				"typeProperties": {
+					"dataLakeStoreUri": "https://servelegalimportlake1dev.azuredatalakestore.net/webhdfs/v1",
+					"azureCloudType": "AzurePublic",
+					"servicePrincipalId": "6260e07a-d213-40dd-9450-b0d5adb91a68",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "**********"
+					},
+					"tenant": "34237eca-663f-4556-96e6-d51b1d7cf362",
+					"subscriptionId": "74c2fcf2-0a41-42ea-9cc4-3bc02ac81f24",
+					"resourceGroupName": "serve-legal-powerbi-dev"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
