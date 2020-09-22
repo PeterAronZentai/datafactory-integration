@@ -27,6 +27,14 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehouseDev'"
 		},
+		"SQLDataWarehouseDevAuth_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehouseDevAuth'"
+		},
+		"AzureDataLakeStore1Auth_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataLakeStore1Auth'"
+		},
 		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 			"type": "string",
 			"defaultValue": "servelegalimportdev"
@@ -70,6 +78,26 @@
 		"RestService1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://index.hu"
+		},
+		"AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri": {
+			"type": "string",
+			"defaultValue": "https://servelegalimportlake1dev.azuredatalakestore.net/webhdfs/v1"
+		},
+		"AzureDataLakeStore1Auth_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "6260e07a-d213-40dd-9450-b0d5adb91a68"
+		},
+		"AzureDataLakeStore1Auth_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "34237eca-663f-4556-96e6-d51b1d7cf362"
+		},
+		"AzureDataLakeStore1Auth_properties_typeProperties_subscriptionId": {
+			"type": "string",
+			"defaultValue": "74c2fcf2-0a41-42ea-9cc4-3bc02ac81f24"
+		},
+		"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
+			"type": "string",
+			"defaultValue": "serve-legal-powerbi-dev"
 		}
 	},
 	"variables": {
@@ -180,6 +208,41 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('SQLDataWarehouseDev_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLDataWarehouseDevAuth')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStore1Auth')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDataLakeStore",
+				"typeProperties": {
+					"dataLakeStoreUri": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_dataLakeStoreUri')]",
+					"azureCloudType": "AzurePublic",
+					"servicePrincipalId": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStore1Auth_servicePrincipalKey')]"
+					},
+					"tenant": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_tenant')]",
+					"subscriptionId": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_subscriptionId')]",
+					"resourceGroupName": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName')]"
 				}
 			},
 			"dependsOn": []
@@ -943,12 +1006,12 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/imported_Clients')]",
+			"name": "[concat(parameters('factoryName'), '/imported_Audits')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
+					"referenceName": "AzureDataLakeStore1Auth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -956,7 +1019,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureDataLakeStoreLocation",
-						"fileName": "clients-to-pull.csv"
+						"fileName": "audits-to-pull.csv"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -966,138 +1029,6 @@
 				"schema": [
 					{
 						"name": "id",
-						"type": "String"
-					},
-					{
-						"name": "legacy_id",
-						"type": "String"
-					},
-					{
-						"name": "name",
-						"type": "String"
-					},
-					{
-						"name": "update_type",
-						"type": "String"
-					},
-					{
-						"name": "status",
-						"type": "String"
-					},
-					{
-						"name": "entity_source",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/imported_Sites')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureDataLakeStoreLocation",
-						"fileName": "sites-to-pull.csv"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "id",
-						"type": "String"
-					},
-					{
-						"name": "legacy_id",
-						"type": "String"
-					},
-					{
-						"name": "name",
-						"type": "String"
-					},
-					{
-						"name": "address_1",
-						"type": "String"
-					},
-					{
-						"name": "address_2",
-						"type": "String"
-					},
-					{
-						"name": "address_3",
-						"type": "String"
-					},
-					{
-						"name": "city",
-						"type": "String"
-					},
-					{
-						"name": "post_code",
-						"type": "String"
-					},
-					{
-						"name": "client_id",
-						"type": "String"
-					},
-					{
-						"name": "status",
-						"type": "String"
-					},
-					{
-						"name": "entity_source",
-						"type": "String"
-					},
-					{
-						"name": "update_type",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/imported_Orders')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureDataLakeStoreLocation",
-						"fileName": "orders-to-pull.csv"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "id",
-						"type": "String"
-					},
-					{
-						"name": "client_id",
 						"type": "String"
 					},
 					{
@@ -1105,15 +1036,23 @@
 						"type": "String"
 					},
 					{
-						"name": "update_type",
+						"name": "date_of_visit",
+						"type": "String"
+					},
+					{
+						"name": "survey_result",
+						"type": "String"
+					},
+					{
+						"name": "site_id",
+						"type": "String"
+					},
+					{
+						"name": "order_id",
 						"type": "String"
 					},
 					{
 						"name": "status",
-						"type": "String"
-					},
-					{
-						"name": "exclude_from_client_reporting",
 						"type": "String"
 					},
 					{
@@ -1123,7 +1062,7 @@
 				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1Auth')]"
 			]
 		}
 	]

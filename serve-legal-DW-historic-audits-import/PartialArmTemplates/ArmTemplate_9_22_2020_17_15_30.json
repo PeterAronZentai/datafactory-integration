@@ -1,0 +1,687 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "serve-legal-DW-historic-audits-import"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/merge-imported-data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/populate-staging-tables')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy to staging_Clients",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "legacy_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "legacy_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "imported_Clients",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Clients",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Copy to staging_audits",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "date_of_visit",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "date_of_visit",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "order_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "order_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "site_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "site_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "survey_result",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "survey_result",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "imported_Audits",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Audits",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "imported_Sites",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Sites",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/imported_Clients')]",
+				"[concat(variables('factoryId'), '/datasets/imported_Audits')]",
+				"[concat(variables('factoryId'), '/datasets/imported_Sites')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/imported_Audits')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1Auth",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": "audits-to-pull.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "item_to_order",
+						"type": "String"
+					},
+					{
+						"name": "date_of_visit",
+						"type": "String"
+					},
+					{
+						"name": "survey_result",
+						"type": "String"
+					},
+					{
+						"name": "site_id",
+						"type": "String"
+					},
+					{
+						"name": "order_id",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "entity_source",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1Auth')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/imported_Clients')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1Auth",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": "clients-to-pull.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "legacy_id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "update_type",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "entity_source",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1Auth')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/imported_Orders')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1Auth",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": "orders-to-pull.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "client_id",
+						"type": "String"
+					},
+					{
+						"name": "item_to_order",
+						"type": "String"
+					},
+					{
+						"name": "update_type",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "exclude_from_client_reporting",
+						"type": "String"
+					},
+					{
+						"name": "entity_source",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1Auth')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/imported_Sites')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1Auth",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": "sites-to-pull.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "legacy_id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "address_1",
+						"type": "String"
+					},
+					{
+						"name": "address_2",
+						"type": "String"
+					},
+					{
+						"name": "address_3",
+						"type": "String"
+					},
+					{
+						"name": "city",
+						"type": "String"
+					},
+					{
+						"name": "post_code",
+						"type": "String"
+					},
+					{
+						"name": "client_id",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "entity_source",
+						"type": "String"
+					},
+					{
+						"name": "update_type",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1Auth')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "imported_Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ClientsSource"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ClientsTarget"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "WriteToClients"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Imported"
+						},
+						{
+							"name": "AlterRow1"
+						}
+					],
+					"script": "source(output(\n\t\tid as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tupdate_type as string,\n\t\tstatus as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ClientsSource\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ClientsTarget\nClientsSource, ClientsTarget join(ClientsSource@id == ClientsSource@id,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Imported\nImported alterRow(insertIf(isNull(ClientsTarget@id))) ~> AlterRow1\nAlterRow1 sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:true,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tinternal_id,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source = ClientsSource@entity_source,\n\t\tid = ClientsSource@id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> WriteToClients"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/imported_Clients')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStore1Auth')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDataLakeStore",
+				"typeProperties": {
+					"dataLakeStoreUri": "https://servelegalimportlake1dev.azuredatalakestore.net/webhdfs/v1",
+					"azureCloudType": "AzurePublic",
+					"servicePrincipalId": "6260e07a-d213-40dd-9450-b0d5adb91a68",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "**********"
+					},
+					"tenant": "34237eca-663f-4556-96e6-d51b1d7cf362",
+					"subscriptionId": "74c2fcf2-0a41-42ea-9cc4-3bc02ac81f24",
+					"resourceGroupName": "serve-legal-powerbi-dev"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

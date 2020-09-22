@@ -13,12 +13,12 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/imported_Audits')]",
+			"name": "[concat(parameters('factoryName'), '/imported_Clients')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
+					"referenceName": "AzureDataLakeStore1Auth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -26,7 +26,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureDataLakeStoreLocation",
-						"fileName": "audits-to-pull.csv"
+						"fileName": "clients-to-pull.csv"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -39,23 +39,15 @@
 						"type": "String"
 					},
 					{
-						"name": "item_to_order",
+						"name": "legacy_id",
 						"type": "String"
 					},
 					{
-						"name": "date_of_visit",
+						"name": "name",
 						"type": "String"
 					},
 					{
-						"name": "survey_result",
-						"type": "String"
-					},
-					{
-						"name": "site_id",
-						"type": "String"
-					},
-					{
-						"name": "order_id",
+						"name": "update_type",
 						"type": "String"
 					},
 					{
@@ -71,355 +63,130 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/staging_Clients')]",
+			"name": "[concat(parameters('factoryName'), '/imported_Orders')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDev",
+					"referenceName": "AzureDataLakeStore1Auth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "row_id",
-						"type": "varchar"
-					},
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "legacy_id",
-						"type": "varchar"
-					},
-					{
-						"name": "name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "logo",
-						"type": "nvarchar"
-					},
-					{
-						"name": "footer",
-						"type": "nvarchar"
-					},
-					{
-						"name": "client_type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "sage_reference",
-						"type": "nvarchar"
-					},
-					{
-						"name": "manager_id",
-						"type": "varchar"
-					},
-					{
-						"name": "contract_expiry",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "store_locator",
-						"type": "nvarchar"
-					},
-					{
-						"name": "status",
-						"type": "nvarchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "org_level1_name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level2_name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level3_name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level4_name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					},
-					{
-						"name": "insert_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					}
-				],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"schema": "dbo",
-					"table": "staging_Clients"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/staging_Sites')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDev",
-					"type": "LinkedServiceReference"
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": "orders-to-pull.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
 				},
-				"annotations": [],
-				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "row_id",
-						"type": "varchar"
-					},
-					{
 						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "legacy_id",
-						"type": "varchar"
-					},
-					{
-						"name": "name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "address_1",
-						"type": "nvarchar"
-					},
-					{
-						"name": "address_2",
-						"type": "nvarchar"
-					},
-					{
-						"name": "address_3",
-						"type": "nvarchar"
-					},
-					{
-						"name": "city",
-						"type": "nvarchar"
-					},
-					{
-						"name": "post_code",
-						"type": "nvarchar"
-					},
-					{
-						"name": "county",
-						"type": "nvarchar"
-					},
-					{
-						"name": "country",
-						"type": "nvarchar"
-					},
-					{
-						"name": "directions",
-						"type": "nvarchar"
-					},
-					{
-						"name": "approving_notes",
-						"type": "nvarchar"
-					},
-					{
-						"name": "code",
-						"type": "nvarchar"
-					},
-					{
-						"name": "status",
-						"type": "nvarchar"
+						"type": "String"
 					},
 					{
 						"name": "client_id",
-						"type": "varchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "org_level1",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level2",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level3",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level4",
-						"type": "nvarchar"
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					},
-					{
-						"name": "insert_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "staging_Sites"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/staging_Orders')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDev",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "row_id",
-						"type": "varchar"
-					},
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "schedule_type",
-						"type": "nvarchar"
+						"type": "String"
 					},
 					{
 						"name": "item_to_order",
-						"type": "nvarchar"
+						"type": "String"
 					},
 					{
-						"name": "order_info",
-						"type": "nvarchar"
-					},
-					{
-						"name": "visits_to_be_billed",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "start_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "end_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "auditor_pay_per_audit",
-						"type": "nvarchar"
-					},
-					{
-						"name": "client_charge_per_audit",
-						"type": "nvarchar"
-					},
-					{
-						"name": "auditor_instructions",
-						"type": "nvarchar"
-					},
-					{
-						"name": "email_subject",
-						"type": "nvarchar"
-					},
-					{
-						"name": "email_survey_result",
-						"type": "nvarchar"
-					},
-					{
-						"name": "exclude_from_client_reporting",
-						"type": "bit"
-					},
-					{
-						"name": "narv_visits_only",
-						"type": "bit"
+						"name": "update_type",
+						"type": "String"
 					},
 					{
 						"name": "status",
-						"type": "nvarchar"
+						"type": "String"
 					},
 					{
-						"name": "currency",
-						"type": "nvarchar"
-					},
-					{
-						"name": "client_id",
-						"type": "varchar"
-					},
-					{
-						"name": "revision_id",
-						"type": "varchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
+						"name": "exclude_from_client_reporting",
+						"type": "String"
 					},
 					{
 						"name": "entity_source",
-						"type": "nvarchar"
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/imported_Sites')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1Auth",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": "sites-to-pull.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id",
+						"type": "String"
 					},
 					{
-						"name": "insert_date",
-						"type": "datetimeoffset",
-						"scale": 7
+						"name": "legacy_id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "address_1",
+						"type": "String"
+					},
+					{
+						"name": "address_2",
+						"type": "String"
+					},
+					{
+						"name": "address_3",
+						"type": "String"
+					},
+					{
+						"name": "city",
+						"type": "String"
+					},
+					{
+						"name": "post_code",
+						"type": "String"
+					},
+					{
+						"name": "client_id",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "entity_source",
+						"type": "String"
+					},
+					{
+						"name": "update_type",
+						"type": "String"
 					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "staging_Orders"
-				}
+				]
 			},
 			"dependsOn": []
 		},
@@ -611,6 +378,359 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "staging_Audits"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/staging_Clients')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQLDataWarehouseDev",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "row_id",
+						"type": "varchar"
+					},
+					{
+						"name": "id",
+						"type": "varchar"
+					},
+					{
+						"name": "internal_id",
+						"type": "varchar"
+					},
+					{
+						"name": "legacy_id",
+						"type": "varchar"
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "logo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "footer",
+						"type": "nvarchar"
+					},
+					{
+						"name": "client_type",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sage_reference",
+						"type": "nvarchar"
+					},
+					{
+						"name": "manager_id",
+						"type": "varchar"
+					},
+					{
+						"name": "contract_expiry",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "store_locator",
+						"type": "nvarchar"
+					},
+					{
+						"name": "status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "created_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "modified_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "org_level1_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "org_level2_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "org_level3_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "org_level4_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "entity_source",
+						"type": "nvarchar"
+					},
+					{
+						"name": "insert_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "staging_Clients"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/staging_Orders')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQLDataWarehouseDev",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "row_id",
+						"type": "varchar"
+					},
+					{
+						"name": "id",
+						"type": "varchar"
+					},
+					{
+						"name": "internal_id",
+						"type": "varchar"
+					},
+					{
+						"name": "schedule_type",
+						"type": "nvarchar"
+					},
+					{
+						"name": "item_to_order",
+						"type": "nvarchar"
+					},
+					{
+						"name": "order_info",
+						"type": "nvarchar"
+					},
+					{
+						"name": "visits_to_be_billed",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "start_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "end_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "auditor_pay_per_audit",
+						"type": "nvarchar"
+					},
+					{
+						"name": "client_charge_per_audit",
+						"type": "nvarchar"
+					},
+					{
+						"name": "auditor_instructions",
+						"type": "nvarchar"
+					},
+					{
+						"name": "email_subject",
+						"type": "nvarchar"
+					},
+					{
+						"name": "email_survey_result",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exclude_from_client_reporting",
+						"type": "bit"
+					},
+					{
+						"name": "narv_visits_only",
+						"type": "bit"
+					},
+					{
+						"name": "status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "currency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "client_id",
+						"type": "varchar"
+					},
+					{
+						"name": "revision_id",
+						"type": "varchar"
+					},
+					{
+						"name": "created_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "modified_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "entity_source",
+						"type": "nvarchar"
+					},
+					{
+						"name": "insert_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "staging_Orders"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/staging_Sites')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQLDataWarehouseDev",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "row_id",
+						"type": "varchar"
+					},
+					{
+						"name": "id",
+						"type": "varchar"
+					},
+					{
+						"name": "internal_id",
+						"type": "varchar"
+					},
+					{
+						"name": "legacy_id",
+						"type": "varchar"
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address_1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address_2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address_3",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "post_code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "county",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "directions",
+						"type": "nvarchar"
+					},
+					{
+						"name": "approving_notes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "client_id",
+						"type": "varchar"
+					},
+					{
+						"name": "created_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "modified_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "org_level1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "org_level2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "org_level3",
+						"type": "nvarchar"
+					},
+					{
+						"name": "org_level4",
+						"type": "nvarchar"
+					},
+					{
+						"name": "entity_source",
+						"type": "nvarchar"
+					},
+					{
+						"name": "insert_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "staging_Sites"
 				}
 			},
 			"dependsOn": []
@@ -4644,14 +4764,67 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "imported_Sites",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Sites",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/imported_Clients')]",
 				"[concat(variables('factoryId'), '/datasets/staging_Clients')]",
-				"[concat(variables('factoryId'), '/datasets/imported_Audits')]",
-				"[concat(variables('factoryId'), '/datasets/staging_Audits')]"
+				"[concat(variables('factoryId'), '/datasets/staging_Audits')]",
+				"[concat(variables('factoryId'), '/datasets/imported_Sites')]",
+				"[concat(variables('factoryId'), '/datasets/staging_Sites')]"
 			]
 		},
 		{
@@ -4714,6 +4887,96 @@
 				"annotations": []
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "imported_Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ClientsSource"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ClientsTarget"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "WriteToClients"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Imported"
+						},
+						{
+							"name": "AlterRow1"
+						}
+					],
+					"script": "source(output(\n\t\tid as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tupdate_type as string,\n\t\tstatus as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ClientsSource\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ClientsTarget\nClientsSource, ClientsTarget join(ClientsSource@id == ClientsSource@id,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Imported\nImported alterRow(insertIf(isNull(ClientsTarget@id))) ~> AlterRow1\nAlterRow1 sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:true,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tinternal_id,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source = ClientsSource@entity_source,\n\t\tid = ClientsSource@id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> WriteToClients"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/imported_Clients')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/merge-imported-data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ClientsSource": {},
+									"ClientsTarget": {},
+									"WriteToClients": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+			]
 		}
 	]
 }
