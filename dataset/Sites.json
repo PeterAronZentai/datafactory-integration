@@ -2,7 +2,7 @@
 	"name": "Sites",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureSqlDatabase1",
+			"referenceName": "SQLDataWarehouseDev",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
