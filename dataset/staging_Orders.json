@@ -1,0 +1,119 @@
+{
+	"name": "staging_Orders",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehouseDev",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "row_id",
+				"type": "varchar"
+			},
+			{
+				"name": "id",
+				"type": "varchar"
+			},
+			{
+				"name": "internal_id",
+				"type": "varchar"
+			},
+			{
+				"name": "schedule_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "item_to_order",
+				"type": "nvarchar"
+			},
+			{
+				"name": "order_info",
+				"type": "nvarchar"
+			},
+			{
+				"name": "visits_to_be_billed",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "start_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "end_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "auditor_pay_per_audit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "client_charge_per_audit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "auditor_instructions",
+				"type": "nvarchar"
+			},
+			{
+				"name": "email_subject",
+				"type": "nvarchar"
+			},
+			{
+				"name": "email_survey_result",
+				"type": "nvarchar"
+			},
+			{
+				"name": "exclude_from_client_reporting",
+				"type": "bit"
+			},
+			{
+				"name": "narv_visits_only",
+				"type": "bit"
+			},
+			{
+				"name": "status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "currency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "client_id",
+				"type": "varchar"
+			},
+			{
+				"name": "revision_id",
+				"type": "varchar"
+			},
+			{
+				"name": "created_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "modified_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "entity_source",
+				"type": "nvarchar"
+			},
+			{
+				"name": "insert_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "staging_Orders"
+		}
+	}
+}

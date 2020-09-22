@@ -55,6 +55,10 @@
 				"type": "String"
 			},
 			{
+				"name": "status",
+				"type": "String"
+			},
+			{
 				"name": "entity_source",
 				"type": "String"
 			},

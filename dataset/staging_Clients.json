@@ -1,0 +1,105 @@
+{
+	"name": "staging_Clients",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehouseDev",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "row_id",
+				"type": "varchar"
+			},
+			{
+				"name": "id",
+				"type": "varchar"
+			},
+			{
+				"name": "internal_id",
+				"type": "varchar"
+			},
+			{
+				"name": "legacy_id",
+				"type": "varchar"
+			},
+			{
+				"name": "name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "logo",
+				"type": "nvarchar"
+			},
+			{
+				"name": "footer",
+				"type": "nvarchar"
+			},
+			{
+				"name": "client_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sage_reference",
+				"type": "nvarchar"
+			},
+			{
+				"name": "manager_id",
+				"type": "varchar"
+			},
+			{
+				"name": "contract_expiry",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "store_locator",
+				"type": "nvarchar"
+			},
+			{
+				"name": "status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "created_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "modified_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "org_level1_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "org_level2_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "org_level3_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "org_level4_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "entity_source",
+				"type": "nvarchar"
+			},
+			{
+				"name": "insert_date",
+				"type": "datetimeoffset",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "staging_Clients"
+		}
+	}
+}
