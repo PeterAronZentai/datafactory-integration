@@ -17,6 +17,9 @@
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},
+		"SQLDataWarehouseDev_connectionString": {
+			"value": ""
+		},
 		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 			"value": "servelegalimportdev"
 		},
