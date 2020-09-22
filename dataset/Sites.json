@@ -10,11 +10,15 @@
 		"schema": [
 			{
 				"name": "id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "internal_id",
-				"type": "nvarchar"
+				"type": "varchar"
+			},
+			{
+				"name": "legacy_id",
+				"type": "varchar"
 			},
 			{
 				"name": "name",
@@ -66,7 +70,7 @@
 			},
 			{
 				"name": "client_id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "created_at",
@@ -79,8 +83,24 @@
 				"scale": 7
 			},
 			{
+				"name": "org_level1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "org_level2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "org_level3",
+				"type": "nvarchar"
+			},
+			{
+				"name": "org_level4",
+				"type": "nvarchar"
+			},
+			{
 				"name": "entity_source",
-				"type": "varchar"
+				"type": "nvarchar"
 			}
 		],
 		"typeProperties": {

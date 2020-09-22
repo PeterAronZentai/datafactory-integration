@@ -743,7 +743,7 @@
 								"sink": {
 									"name": "ClientId"
 								}
-							}							
+							}
 						],
 						"typeConversion": true,
 						"typeConversionSettings": {
@@ -767,7 +767,7 @@
 						}
 					}
 				]
-			},			
+			},
 			{
 				"name": "If DoSomething",
 				"type": "IfCondition",

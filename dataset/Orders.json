@@ -10,11 +10,11 @@
 		"schema": [
 			{
 				"name": "id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "internal_id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "schedule_type",
@@ -81,11 +81,11 @@
 			},
 			{
 				"name": "client_id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "revision_id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "created_at",
@@ -99,7 +99,7 @@
 			},
 			{
 				"name": "entity_source",
-				"type": "varchar"
+				"type": "nvarchar"
 			}
 		],
 		"typeProperties": {

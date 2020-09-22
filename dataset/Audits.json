@@ -10,7 +10,7 @@
 		"schema": [
 			{
 				"name": "id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "internal_id",
@@ -126,19 +126,19 @@
 			},
 			{
 				"name": "order_id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "site_id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "approved_by_id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "auditor_id",
-				"type": "nvarchar"
+				"type": "varchar"
 			},
 			{
 				"name": "item_to_order",
@@ -169,7 +169,7 @@
 			},
 			{
 				"name": "entity_source",
-				"type": "varchar"
+				"type": "nvarchar"
 			}
 		],
 		"typeProperties": {
