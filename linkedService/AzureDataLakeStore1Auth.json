@@ -1,0 +1,17 @@
+{
+	"name": "AzureDataLakeStore1Auth",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDataLakeStore",
+		"typeProperties": {
+			"dataLakeStoreUri": "https://servelegalimportlake1dev.azuredatalakestore.net/webhdfs/v1",
+			"azureCloudType": "AzurePublic",
+			"servicePrincipalId": "6260e07a-d213-40dd-9450-b0d5adb91a68",
+			"tenant": "34237eca-663f-4556-96e6-d51b1d7cf362",
+			"subscriptionId": "74c2fcf2-0a41-42ea-9cc4-3bc02ac81f24",
+			"resourceGroupName": "serve-legal-powerbi-dev",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIlNFUlZFLUxFR0FMLURXLUhJU1RPUklDLUFVRElUUy1JTVBPUlRfYTRhOWE4M2EtNTM0Yi00NWVhLTk5NWEtZmE4NDYwNDU3MDliIg0KfQ=="
+		}
+	}
+}
