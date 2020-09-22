@@ -19,24 +19,31 @@
 		},
 		"schema": [
 			{
+				"name": "id",
 				"type": "String"
 			},
 			{
+				"name": "item_to_order",
 				"type": "String"
 			},
 			{
+				"name": "date_of_visit",
 				"type": "String"
 			},
 			{
+				"name": "survey_result",
 				"type": "String"
 			},
 			{
+				"name": "site_id",
 				"type": "String"
 			},
 			{
+				"name": "order_id",
 				"type": "String"
 			},
 			{
+				"name": "entity_source",
 				"type": "String"
 			}
 		]
