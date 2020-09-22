@@ -45,11 +45,11 @@
 							},
 							{
 								"source": {
-									"name": "internal_id",
+									"name": "legacy_id",
 									"type": "String"
 								},
 								"sink": {
-									"path": "$['internal_id']"
+									"path": "$['legacy_id']"
 								}
 							}
 						]
@@ -114,11 +114,10 @@
 							},
 							{
 								"source": {
-									"name": "internal_id",
-									"type": "String"
+									"name": "legacy_id"
 								},
 								"sink": {
-									"path": "$['internal_id']"
+									"path": "$['legacy_id']"
 								}
 							}
 						]
