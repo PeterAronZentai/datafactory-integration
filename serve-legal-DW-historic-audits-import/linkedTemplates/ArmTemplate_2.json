@@ -82,7 +82,9 @@
 								"datasetParameters": {
 									"InputExcel": {},
 									"ExistingClients": {},
-									"MergedClients": {}
+									"ExistingSites": {},
+									"MergedClients": {},
+									"MergedSites": {}
 								}
 							},
 							"staging": {},
