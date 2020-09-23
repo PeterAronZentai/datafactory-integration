@@ -1,0 +1,48 @@
+{
+	"name": "StagingToDWAuditors",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "staging_Auditors",
+						"type": "DatasetReference"
+					},
+					"name": "Staging"
+				},
+				{
+					"dataset": {
+						"referenceName": "Auditors",
+						"type": "DatasetReference"
+					},
+					"name": "Existing"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Auditors",
+						"type": "DatasetReference"
+					},
+					"name": "Merge"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LookupExistingIds"
+				},
+				{
+					"name": "Existingds"
+				},
+				{
+					"name": "DecideMerge"
+				},
+				{
+					"name": "SortByInsertedDate"
+				}
+			],
+			"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\temail_settings as boolean,\n\t\tpassport as string,\n\t\tidentification as string,\n\t\tcountry as string,\n\t\thonorific as string,\n\t\tgender as string,\n\t\tdate_of_birth as string,\n\t\tmarital_status as string,\n\t\toccupation as string,\n\t\tni_pps as string,\n\t\thome_address_1 as string,\n\t\thome_address_2 as string,\n\t\thome_city as string,\n\t\thome_post_code as string,\n\t\thome_county as string,\n\t\tterm_address_1 as string,\n\t\tterm_address_2 as string,\n\t\tterm_city as string,\n\t\tterm_post_code as string,\n\t\tterm_county as string,\n\t\tmobile_number as string,\n\t\thome_number as string,\n\t\tnotes as string,\n\t\thear_about_us as string,\n\t\thear_about_us_details as string,\n\t\trecommended_by as string,\n\t\temail_communication as boolean,\n\t\tservelegal_community as boolean,\n\t\tcard_name as string,\n\t\tbank_country as string,\n\t\taccount_number as string,\n\t\tsort_code as string,\n\t\tswift_code as string,\n\t\tiban_number as string,\n\t\tcircumstances as string,\n\t\tstudent_loans as string,\n\t\taccess_to_car as string,\n\t\twhy_servelegal as string,\n\t\tabout_yourself as string,\n\t\ttravel_outside as string,\n\t\tauditor_status as string,\n\t\tuser_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\temail_settings as boolean,\n\t\tpassport as string,\n\t\tidentification as string,\n\t\tcountry as string,\n\t\thonorific as string,\n\t\tgender as string,\n\t\tdate_of_birth as string,\n\t\tmarital_status as string,\n\t\toccupation as string,\n\t\tni_pps as string,\n\t\thome_address_1 as string,\n\t\thome_address_2 as string,\n\t\thome_city as string,\n\t\thome_post_code as string,\n\t\thome_county as string,\n\t\tterm_address_1 as string,\n\t\tterm_address_2 as string,\n\t\tterm_city as string,\n\t\tterm_post_code as string,\n\t\tterm_county as string,\n\t\tmobile_number as string,\n\t\thome_number as string,\n\t\tnotes as string,\n\t\thear_about_us as string,\n\t\thear_about_us_details as string,\n\t\trecommended_by as string,\n\t\temail_communication as boolean,\n\t\tservelegal_community as boolean,\n\t\tcard_name as string,\n\t\tbank_country as string,\n\t\taccount_number as string,\n\t\tsort_code as string,\n\t\tswift_code as string,\n\t\tiban_number as string,\n\t\tcircumstances as string,\n\t\tstudent_loans as string,\n\t\taccess_to_car as string,\n\t\twhy_servelegal as string,\n\t\tabout_yourself as string,\n\t\ttravel_outside as string,\n\t\tauditor_status as string,\n\t\tuser_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, Existingds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Existingds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\temail_settings as boolean,\n\t\tpassport as string,\n\t\tidentification as string,\n\t\tcountry as string,\n\t\thonorific as string,\n\t\tgender as string,\n\t\tdate_of_birth as string,\n\t\tmarital_status as string,\n\t\toccupation as string,\n\t\tni_pps as string,\n\t\thome_address_1 as string,\n\t\thome_address_2 as string,\n\t\thome_city as string,\n\t\thome_post_code as string,\n\t\thome_county as string,\n\t\tterm_address_1 as string,\n\t\tterm_address_2 as string,\n\t\tterm_city as string,\n\t\tterm_post_code as string,\n\t\tterm_county as string,\n\t\tmobile_number as string,\n\t\thome_number as string,\n\t\tnotes as string,\n\t\thear_about_us as string,\n\t\thear_about_us_details as string,\n\t\trecommended_by as string,\n\t\temail_communication as boolean,\n\t\tservelegal_community as boolean,\n\t\tcard_name as string,\n\t\tbank_country as string,\n\t\taccount_number as string,\n\t\tsort_code as string,\n\t\tswift_code as string,\n\t\tiban_number as string,\n\t\tcircumstances as string,\n\t\tstudent_loans as string,\n\t\taccess_to_car as string,\n\t\twhy_servelegal as string,\n\t\tabout_yourself as string,\n\t\ttravel_outside as string,\n\t\tauditor_status as string,\n\t\tuser_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\temail_settings,\n\t\tpassport,\n\t\tidentification,\n\t\tcountry,\n\t\thonorific,\n\t\tgender,\n\t\tdate_of_birth,\n\t\tmarital_status,\n\t\toccupation,\n\t\tni_pps,\n\t\thome_address_1,\n\t\thome_address_2,\n\t\thome_city,\n\t\thome_post_code,\n\t\thome_county,\n\t\tterm_address_1,\n\t\tterm_address_2,\n\t\tterm_city,\n\t\tterm_post_code,\n\t\tterm_county,\n\t\tmobile_number,\n\t\thome_number,\n\t\tnotes,\n\t\thear_about_us,\n\t\thear_about_us_details,\n\t\trecommended_by,\n\t\temail_communication,\n\t\tservelegal_community,\n\t\tcard_name,\n\t\tbank_country,\n\t\taccount_number,\n\t\tsort_code,\n\t\tswift_code,\n\t\tiban_number,\n\t\tcircumstances,\n\t\tstudent_loans,\n\t\taccess_to_car,\n\t\twhy_servelegal,\n\t\tabout_yourself,\n\t\ttravel_outside,\n\t\tauditor_status,\n\t\tuser_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+		}
+	}
+}

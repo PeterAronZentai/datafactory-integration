@@ -1,0 +1,71 @@
+{
+	"name": "Questions",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehouseDevAuth",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "varchar"
+			},
+			{
+				"name": "internal_id",
+				"type": "varchar"
+			},
+			{
+				"name": "help",
+				"type": "nvarchar"
+			},
+			{
+				"name": "type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "required",
+				"type": "bit"
+			},
+			{
+				"name": "category",
+				"type": "nvarchar"
+			},
+			{
+				"name": "config",
+				"type": "nvarchar"
+			},
+			{
+				"name": "question_template_id",
+				"type": "varchar"
+			},
+			{
+				"name": "revision_id",
+				"type": "varchar"
+			},
+			{
+				"name": "created_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "modified_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "entity_source",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Questions"
+		}
+	}
+}

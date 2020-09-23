@@ -1,5 +1,5 @@
 {
-	"name": "staging_Orders",
+	"name": "staging_Questions",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "SQLDataWarehouseDevAuth",
@@ -21,70 +21,31 @@
 				"type": "varchar"
 			},
 			{
-				"name": "schedule_type",
+				"name": "help",
 				"type": "nvarchar"
 			},
 			{
-				"name": "item_to_order",
+				"name": "type",
 				"type": "nvarchar"
 			},
 			{
-				"name": "order_info",
+				"name": "title",
 				"type": "nvarchar"
 			},
 			{
-				"name": "visits_to_be_billed",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "start_date",
-				"type": "datetimeoffset",
-				"scale": 7
-			},
-			{
-				"name": "end_date",
-				"type": "datetimeoffset",
-				"scale": 7
-			},
-			{
-				"name": "auditor_pay_per_audit",
-				"type": "nvarchar"
-			},
-			{
-				"name": "client_charge_per_audit",
-				"type": "nvarchar"
-			},
-			{
-				"name": "auditor_instructions",
-				"type": "nvarchar"
-			},
-			{
-				"name": "email_subject",
-				"type": "nvarchar"
-			},
-			{
-				"name": "email_survey_result",
-				"type": "nvarchar"
-			},
-			{
-				"name": "exclude_from_client_reporting",
+				"name": "required",
 				"type": "bit"
 			},
 			{
-				"name": "narv_visits_only",
-				"type": "bit"
-			},
-			{
-				"name": "status",
+				"name": "category",
 				"type": "nvarchar"
 			},
 			{
-				"name": "currency",
+				"name": "config",
 				"type": "nvarchar"
 			},
 			{
-				"name": "client_id",
+				"name": "question_template_id",
 				"type": "varchar"
 			},
 			{
@@ -113,7 +74,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "staging_Orders"
+			"table": "staging_Questions"
 		}
 	}
 }
