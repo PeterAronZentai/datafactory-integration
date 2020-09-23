@@ -5137,6 +5137,106 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SyncAVSClients')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Clients",
+								"type": "DatasetReference"
+							},
+							"name": "StagingClient"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingClients"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExistingClientIds"
+						},
+						{
+							"name": "LookupIfExisting"
+						},
+						{
+							"name": "ConditionalSplit2"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StagingClient\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingClients\nExistingClients select(mapColumn(\n\t\texisting_id = id,\n\t\texisting_legacy_id = legacy_id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingClientIds\nConditionalSplit2@LegacyClients, ExistingClientIds lookup(legacy_id == existing_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupIfExisting\nStagingClient split(!isNull(legacy_id),\n\tdisjoint: false) ~> ConditionalSplit2@(LegacyClients, NonLegacyClients)\nLookupIfExisting sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/staging_Clients')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SimpleMergeClient')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Clients",
+								"type": "DatasetReference"
+							},
+							"name": "StagingClients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingClients"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "MergedClients"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExistingClientIds"
+						},
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StagingClients\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingClients\nExistingClients select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingClientIds\nStagingClients, ExistingClientIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedClients"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/staging_Clients')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/HistoricalDataImport')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -5177,50 +5277,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/HistoricalDataImport')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/merge-imported-data')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "dataflow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflow1",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"PreClientsSource": {},
-									"ClientsTarget": {},
-									"ClientsHistoricSource": {},
-									"WriteToClients": {}
-								}
-							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "CustomIntegrationRuntime",
-								"type": "IntegrationRuntimeReference"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
 			]
 		}
 	]
