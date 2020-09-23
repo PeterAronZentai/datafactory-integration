@@ -83,8 +83,10 @@
 									"InputExcel": {},
 									"ExistingClients": {},
 									"ExistingSites": {},
+									"ExistingOrders": {},
 									"MergedClients": {},
-									"MergedSites": {}
+									"MergedSites": {},
+									"MergedOrders": {}
 								}
 							},
 							"staging": {},
