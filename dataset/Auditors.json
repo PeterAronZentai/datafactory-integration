@@ -1,0 +1,208 @@
+{
+	"name": "Auditors",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehouseDevAuth",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "varchar"
+			},
+			{
+				"name": "internal_id",
+				"type": "varchar"
+			},
+			{
+				"name": "email_settings",
+				"type": "bit"
+			},
+			{
+				"name": "passport",
+				"type": "nvarchar"
+			},
+			{
+				"name": "identification",
+				"type": "nvarchar"
+			},
+			{
+				"name": "country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "honorific",
+				"type": "nvarchar"
+			},
+			{
+				"name": "gender",
+				"type": "nvarchar"
+			},
+			{
+				"name": "date_of_birth",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "marital_status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "occupation",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ni_pps",
+				"type": "nvarchar"
+			},
+			{
+				"name": "home_address_1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "home_address_2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "home_city",
+				"type": "nvarchar"
+			},
+			{
+				"name": "home_post_code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "home_county",
+				"type": "nvarchar"
+			},
+			{
+				"name": "term_address_1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "term_address_2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "term_city",
+				"type": "nvarchar"
+			},
+			{
+				"name": "term_post_code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "term_county",
+				"type": "nvarchar"
+			},
+			{
+				"name": "mobile_number",
+				"type": "nvarchar"
+			},
+			{
+				"name": "home_number",
+				"type": "nvarchar"
+			},
+			{
+				"name": "notes",
+				"type": "nvarchar"
+			},
+			{
+				"name": "hear_about_us",
+				"type": "nvarchar"
+			},
+			{
+				"name": "hear_about_us_details",
+				"type": "nvarchar"
+			},
+			{
+				"name": "recommended_by",
+				"type": "nvarchar"
+			},
+			{
+				"name": "email_communication",
+				"type": "bit"
+			},
+			{
+				"name": "servelegal_community",
+				"type": "bit"
+			},
+			{
+				"name": "card_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "bank_country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "account_number",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sort_code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "swift_code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "iban_number",
+				"type": "nvarchar"
+			},
+			{
+				"name": "circumstances",
+				"type": "nvarchar"
+			},
+			{
+				"name": "student_loans",
+				"type": "nvarchar"
+			},
+			{
+				"name": "access_to_car",
+				"type": "nvarchar"
+			},
+			{
+				"name": "why_servelegal",
+				"type": "nvarchar"
+			},
+			{
+				"name": "about_yourself",
+				"type": "nvarchar"
+			},
+			{
+				"name": "travel_outside",
+				"type": "nvarchar"
+			},
+			{
+				"name": "auditor_status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "user_id",
+				"type": "varchar"
+			},
+			{
+				"name": "created_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "modified_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "entity_source",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Auditors"
+		}
+	}
+}
