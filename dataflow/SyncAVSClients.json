@@ -1,5 +1,5 @@
 {
-	"name": "dataflow3",
+	"name": "SyncAVSClients",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
