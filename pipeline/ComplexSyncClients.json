@@ -1,0 +1,36 @@
+{
+	"name": "ComplexSyncClients",
+	"properties": {
+		"activities": [
+			{
+				"name": "SyncAVSClients",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "SyncAVSClients",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sink1": {
+								"table_name": "t_error"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
