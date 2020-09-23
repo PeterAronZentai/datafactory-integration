@@ -84,9 +84,11 @@
 									"ExistingClients": {},
 									"ExistingSites": {},
 									"ExistingOrders": {},
+									"ExistingAudits": {},
 									"MergedClients": {},
 									"MergedSites": {},
-									"MergedOrders": {}
+									"MergedOrders": {},
+									"MergedAudits": {}
 								}
 							},
 							"staging": {},

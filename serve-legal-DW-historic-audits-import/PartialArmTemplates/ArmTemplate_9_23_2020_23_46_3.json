@@ -1,0 +1,175 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "serve-legal-DW-historic-audits-import"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/HistoricalDataImport')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "AzureBlobStorage1",
+								"type": "LinkedServiceReference"
+							},
+							"name": "InputExcel"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingClients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingSites"
+						},
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingAudits"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "MergedClients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "MergedSites"
+						},
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "MergedOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "MergedAudits"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExistingCliendIds"
+						},
+						{
+							"name": "UniqueClients"
+						},
+						{
+							"name": "ClientsLookedUp"
+						},
+						{
+							"name": "ComputedColumns"
+						},
+						{
+							"name": "ExcludeEmpty"
+						},
+						{
+							"name": "ExcludeAVSOwned"
+						},
+						{
+							"name": "EstablishMerge"
+						},
+						{
+							"name": "UniqueSites"
+						},
+						{
+							"name": "ExistingSiteIds"
+						},
+						{
+							"name": "SiteLookedUp"
+						},
+						{
+							"name": "ComputedSiteColumns"
+						},
+						{
+							"name": "ClientLookedUp"
+						},
+						{
+							"name": "ExcludeAVSOwnedSites"
+						},
+						{
+							"name": "EstablishSiteMerge"
+						},
+						{
+							"name": "UniqueOrders"
+						},
+						{
+							"name": "OrderClientsLookup"
+						},
+						{
+							"name": "ComputedOrderColumns"
+						},
+						{
+							"name": "EstablishOrderMerge"
+						},
+						{
+							"name": "ExistingOrderIds"
+						},
+						{
+							"name": "ExistingOrdersLoookup"
+						},
+						{
+							"name": "ExistingAuditIds"
+						},
+						{
+							"name": "AuditsLookup"
+						},
+						{
+							"name": "ComputedAuditColumns"
+						},
+						{
+							"name": "AuditSiteLookup"
+						},
+						{
+							"name": "AuditOrderLookup"
+						},
+						{
+							"name": "EstablishAuditMerge"
+						}
+					],
+					"script": "source(output(\n\t\tOrder as string,\n\t\tClient as string,\n\t\tVisit as string,\n\t\tSite as string,\n\t\t{Premises Name} as string,\n\t\tAddress1 as string,\n\t\tAddress2 as string,\n\t\tAddress3 as string,\n\t\tCity as string,\n\t\t{Post Code} as string,\n\t\t{Item to order} as string,\n\t\t{Actual Visit Date} as date 'dd/MM/yyyy',\n\t\t{Actual Visit Time} as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss.SSS\\'Z\\'',\n\t\t{AM / PM} as string,\n\t\t{Pass-Fail} as string,\n\t\t{Pass-Fail2} as string,\n\t\t{Abort Reason} as string,\n\t\t{Extra Site 1} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'excel',\n\tcontainer: 'audits',\n\tfileName: '3 year data v3.xlsx',\n\tsheetName: '3 year data v1',\n\tfirstRowAsHeader: true) ~> InputExcel\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingClients\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingSites\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingOrders\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingAudits\nExistingClients select(mapColumn(\n\t\texisting_client_id = id,\n\t\texisting_client_legacy_id = legacy_id,\n\t\texisting_client_entity_source = entity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingCliendIds\nExcludeEmpty aggregate(groupBy(Client),\n\tname = max(Client)) ~> UniqueClients\nUniqueClients, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> ClientsLookedUp\nClientsLookedUp derive(id = coalesce(existing_client_id, Client),\n\t\tstatus = 'active',\n\t\tlegacy_id = coalesce(existing_client_legacy_id, Client),\n\t\tentity_source = 'historical-import') ~> ComputedColumns\nInputExcel filter(!isNull(Client)) ~> ExcludeEmpty\nComputedColumns filter(isNull(existing_client_entity_source) || existing_client_entity_source != 'AVS') ~> ExcludeAVSOwned\nExcludeAVSOwned alterRow(insertIf(isNull(existing_client_id)),\n\tupdateIf(!isNull(existing_client_id))) ~> EstablishMerge\nExcludeEmpty aggregate(groupBy(Site),\n\tClient = max(Client),\n\t\t{Premises Name} = max({Premises Name}),\n\t\tAddress1 = max(Address1),\n\t\tAddress2 = max(Address2),\n\t\tAddress3 = max(Address3),\n\t\tCity = max(City),\n\t\t{Post Code} = max({Post Code})) ~> UniqueSites\nExistingSites select(mapColumn(\n\t\texisting_site_id = id,\n\t\texisting_site_legacy_id = legacy_id,\n\t\texisting_site_entity_source = entity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingSiteIds\nUniqueSites, ExistingSiteIds lookup(Site == existing_site_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_site_id, true),\n\tbroadcast: 'auto')~> SiteLookedUp\nClientLookedUp derive(id = coalesce(existing_site_id, Site),\n\t\tlegacy_id = Site,\n\t\tclient_id = coalesce(existing_client_legacy_id, Client),\n\t\tstatus = 'active',\n\t\tentity_source = 'historic-import') ~> ComputedSiteColumns\nSiteLookedUp, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> ClientLookedUp\nComputedSiteColumns filter(isNull(existing_site_id) || existing_site_entity_source != 'AVS') ~> ExcludeAVSOwnedSites\nExcludeAVSOwnedSites alterRow(insertIf(isNull(existing_site_id)),\n\tupdateIf(!isNull(existing_site_id))) ~> EstablishSiteMerge\nExcludeEmpty aggregate(groupBy(Order),\n\t{Item to order} = max({Item to order}),\n\t\tClient = max(Client)) ~> UniqueOrders\nUniqueOrders, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> OrderClientsLookup\nOrderClientsLookup derive(client_id = coalesce(existing_client_id, Client),\n\t\tstatus = 'active',\n\t\texclude_from_client_reporting = false(),\n\t\tid = Order,\n\t\tlegacy_id = Order,\n\t\tentity_source = 'historic-import') ~> ComputedOrderColumns\nExistingOrdersLoookup alterRow(insertIf(isNull(existing_order_id)),\n\tupdateIf(true())) ~> EstablishOrderMerge\nExistingOrders select(mapColumn(\n\t\texisting_order_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingOrderIds\nComputedOrderColumns, ExistingOrderIds lookup(Order == existing_order_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_order_id, true),\n\tbroadcast: 'auto')~> ExistingOrdersLoookup\nExistingAudits select(mapColumn(\n\t\texisting_audit_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingAuditIds\nExcludeEmpty, ExistingAuditIds lookup(Visit == existing_audit_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_audit_id, true),\n\tbroadcast: 'auto')~> AuditsLookup\nAuditOrderLookup derive(id = Visit,\n\t\torder_id = coalesce(existing_order_id, Order),\n\t\tsite_id = coalesce(existing_site_id, Site),\n\t\tlegacy_id = Visit,\n\t\tdate_of_visit = concat(toString({Actual Visit Date}, 'yyyy-MM-dd'),'T', toString(hour({Actual Visit Time}), '00'), ':', toString(minute({Actual Visit Time}), '00'), ':', toString(second({Actual Visit Time}), '00'), {AM / PM}),\n\t\tstatus = 'approved') ~> ComputedAuditColumns\nAuditsLookup, ExistingSiteIds lookup(Site == existing_site_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_site_id, true),\n\tbroadcast: 'auto')~> AuditSiteLookup\nAuditSiteLookup, ExistingOrderIds lookup(Order == existing_order_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_order_id, true),\n\tbroadcast: 'auto')~> AuditOrderLookup\nComputedAuditColumns alterRow(insertIf(isNull(existing_audit_id)),\n\tupdateIf(true())) ~> EstablishAuditMerge\nEstablishMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tname,\n\t\tstatus,\n\t\tlegacy_id,\n\t\tstatus,\n\t\tentity_source,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedClients\nEstablishSiteMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tlegacy_id,\n\t\tname = {Premises Name},\n\t\taddress_1 = Address1,\n\t\taddress_2 = Address2,\n\t\taddress_3 = Address3,\n\t\tcity = City,\n\t\tpost_code = {Post Code},\n\t\tstatus,\n\t\tclient_id,\n\t\tentity_source,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedSites\nEstablishOrderMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\titem_to_order = {Item to order},\n\t\texclude_from_client_reporting,\n\t\tstatus,\n\t\tclient_id,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedOrders\nEstablishAuditMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tdate_of_visit,\n\t\tstatus,\n\t\torder_id,\n\t\tsite_id,\n\t\titem_to_order = {Item to order},\n\t\tsurvey_result = {Pass-Fail}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedAudits"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
