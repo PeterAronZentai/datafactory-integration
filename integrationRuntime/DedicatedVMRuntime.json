@@ -1,0 +1,6 @@
+{
+	"name": "DedicatedVMRuntime",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}
