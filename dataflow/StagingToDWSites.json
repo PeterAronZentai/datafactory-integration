@@ -1,0 +1,48 @@
+{
+	"name": "StagingToDWSites",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "staging_Sites",
+						"type": "DatasetReference"
+					},
+					"name": "Staging"
+				},
+				{
+					"dataset": {
+						"referenceName": "Sites",
+						"type": "DatasetReference"
+					},
+					"name": "Existing"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Sites",
+						"type": "DatasetReference"
+					},
+					"name": "Merge"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LookupExistingIds"
+				},
+				{
+					"name": "ExistingIds"
+				},
+				{
+					"name": "DecideMerge"
+				},
+				{
+					"name": "SortByInsertedDate"
+				}
+			],
+			"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\taddress_1,\n\t\taddress_2,\n\t\taddress_3,\n\t\tcity,\n\t\tpost_code,\n\t\tcounty,\n\t\tcountry,\n\t\tdirections,\n\t\tapproving_notes,\n\t\tcode,\n\t\tstatus,\n\t\tclient_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1,\n\t\torg_level2,\n\t\torg_level3,\n\t\torg_level4,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+		}
+	}
+}
