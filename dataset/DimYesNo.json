@@ -1,0 +1,44 @@
+{
+	"name": "DimYesNo",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehouseDevAuth",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "bitValue",
+				"type": "bit"
+			},
+			{
+				"name": "stringValue",
+				"type": "nvarchar"
+			},
+			{
+				"name": "valueType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "created_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "modified_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Dim_YesNo"
+		}
+	}
+}
