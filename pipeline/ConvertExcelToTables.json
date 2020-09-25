@@ -21,6 +21,9 @@
 						"datasetParameters": {
 							"sink1": {
 								"table_name": "imported_visits"
+							},
+							"sink2": {
+								"TableName": "test_visits"
 							}
 						}
 					},
