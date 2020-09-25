@@ -1,0 +1,48 @@
+{
+	"name": "StagingToDWAudits",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "staging_Audits",
+						"type": "DatasetReference"
+					},
+					"name": "Staging"
+				},
+				{
+					"dataset": {
+						"referenceName": "Audits",
+						"type": "DatasetReference"
+					},
+					"name": "Existing"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Audits",
+						"type": "DatasetReference"
+					},
+					"name": "Merge"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LookupExistingIds"
+				},
+				{
+					"name": "ExistingIds"
+				},
+				{
+					"name": "DecideMerge"
+				},
+				{
+					"name": "SortByInsertedDate"
+				}
+			],
+			"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tquery_notes,\n\t\tquery_category,\n\t\tsurvey_result,\n\t\tvisit_info,\n\t\tsubmitted_date,\n\t\tapproval_date,\n\t\tdeadline_date,\n\t\tdate_of_visit,\n\t\tpurchase_cost,\n\t\tallowance,\n\t\tmileage,\n\t\tentrance_charge,\n\t\ttravel_expenses,\n\t\ttravel_expenses_type,\n\t\ttravel_expenses_description,\n\t\treclaimable_expenses,\n\t\treclaimable_expenses_type,\n\t\treclaimable_expenses_description,\n\t\tpaid,\n\t\tbatched,\n\t\tpayroll_date,\n\t\tpay_date,\n\t\temail_note,\n\t\tstatus,\n\t\torder_id,\n\t\tsite_id,\n\t\tapproved_by_id,\n\t\tauditor_id,\n\t\titem_to_order,\n\t\tauditor_instructions,\n\t\tauditor_pay_per_audit,\n\t\tapproving_notes,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+		}
+	}
+}

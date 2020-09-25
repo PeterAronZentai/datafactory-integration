@@ -1,0 +1,55 @@
+{
+	"name": "Revisions",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehouseDevAuth",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "varchar"
+			},
+			{
+				"name": "internal_id",
+				"type": "varchar"
+			},
+			{
+				"name": "status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "survey_id",
+				"type": "varchar"
+			},
+			{
+				"name": "blocked",
+				"type": "bit"
+			},
+			{
+				"name": "created_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "modified_at",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "entity_source",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Revisions"
+		}
+	}
+}

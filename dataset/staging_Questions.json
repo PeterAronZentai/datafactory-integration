@@ -1,5 +1,5 @@
 {
-	"name": "staging_Sites",
+	"name": "staging_Questions",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "SQLDataWarehouseDevAuth",
@@ -21,59 +21,35 @@
 				"type": "varchar"
 			},
 			{
-				"name": "legacy_id",
+				"name": "help",
+				"type": "nvarchar"
+			},
+			{
+				"name": "type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "required",
+				"type": "bit"
+			},
+			{
+				"name": "category",
+				"type": "nvarchar"
+			},
+			{
+				"name": "config",
+				"type": "nvarchar"
+			},
+			{
+				"name": "question_template_id",
 				"type": "varchar"
 			},
 			{
-				"name": "name",
-				"type": "nvarchar"
-			},
-			{
-				"name": "address_1",
-				"type": "nvarchar"
-			},
-			{
-				"name": "address_2",
-				"type": "nvarchar"
-			},
-			{
-				"name": "address_3",
-				"type": "nvarchar"
-			},
-			{
-				"name": "city",
-				"type": "nvarchar"
-			},
-			{
-				"name": "post_code",
-				"type": "nvarchar"
-			},
-			{
-				"name": "county",
-				"type": "nvarchar"
-			},
-			{
-				"name": "country",
-				"type": "nvarchar"
-			},
-			{
-				"name": "directions",
-				"type": "nvarchar"
-			},
-			{
-				"name": "approving_notes",
-				"type": "nvarchar"
-			},
-			{
-				"name": "code",
-				"type": "nvarchar"
-			},
-			{
-				"name": "status",
-				"type": "nvarchar"
-			},
-			{
-				"name": "client_id",
+				"name": "revision_id",
 				"type": "varchar"
 			},
 			{
@@ -87,22 +63,6 @@
 				"scale": 7
 			},
 			{
-				"name": "org_level1",
-				"type": "nvarchar"
-			},
-			{
-				"name": "org_level2",
-				"type": "nvarchar"
-			},
-			{
-				"name": "org_level3",
-				"type": "nvarchar"
-			},
-			{
-				"name": "org_level4",
-				"type": "nvarchar"
-			},
-			{
 				"name": "entity_source",
 				"type": "nvarchar"
 			},
@@ -114,7 +74,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "staging_Sites"
+			"table": "staging_Questions"
 		}
 	}
 }

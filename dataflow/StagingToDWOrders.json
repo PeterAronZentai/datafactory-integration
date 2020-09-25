@@ -1,0 +1,48 @@
+{
+	"name": "StagingToDWOrders",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "staging_Orders",
+						"type": "DatasetReference"
+					},
+					"name": "Staging"
+				},
+				{
+					"dataset": {
+						"referenceName": "Orders",
+						"type": "DatasetReference"
+					},
+					"name": "Existing"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Orders",
+						"type": "DatasetReference"
+					},
+					"name": "Merge"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LookupExistingIds"
+				},
+				{
+					"name": "ExistingIds"
+				},
+				{
+					"name": "DecideMerge"
+				},
+				{
+					"name": "SortByInsertedDate"
+				}
+			],
+			"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tschedule_type,\n\t\titem_to_order,\n\t\torder_info,\n\t\tvisits_to_be_billed,\n\t\tstart_date,\n\t\tend_date,\n\t\tauditor_pay_per_audit,\n\t\tclient_charge_per_audit,\n\t\tauditor_instructions,\n\t\temail_subject,\n\t\temail_survey_result,\n\t\texclude_from_client_reporting,\n\t\tnarv_visits_only,\n\t\tstatus,\n\t\tcurrency,\n\t\tclient_id,\n\t\trevision_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+		}
+	}
+}

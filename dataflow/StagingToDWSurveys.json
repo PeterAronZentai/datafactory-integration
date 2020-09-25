@@ -1,0 +1,48 @@
+{
+	"name": "StagingToDWSurveys",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "staging_Surveys",
+						"type": "DatasetReference"
+					},
+					"name": "Staging"
+				},
+				{
+					"dataset": {
+						"referenceName": "Surveys",
+						"type": "DatasetReference"
+					},
+					"name": "Existing"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Surveys",
+						"type": "DatasetReference"
+					},
+					"name": "Merge"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LookupExistingIds"
+				},
+				{
+					"name": "ExistingIds"
+				},
+				{
+					"name": "DecideMerge"
+				},
+				{
+					"name": "SortByInsertedDate"
+				}
+			],
+			"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\ttitle,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+		}
+	}
+}

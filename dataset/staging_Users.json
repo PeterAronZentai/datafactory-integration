@@ -1,5 +1,5 @@
 {
-	"name": "staging_Sites",
+	"name": "staging_Users",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "SQLDataWarehouseDevAuth",
@@ -21,51 +21,23 @@
 				"type": "varchar"
 			},
 			{
-				"name": "legacy_id",
-				"type": "varchar"
-			},
-			{
-				"name": "name",
+				"name": "first_name",
 				"type": "nvarchar"
 			},
 			{
-				"name": "address_1",
+				"name": "middle_name",
 				"type": "nvarchar"
 			},
 			{
-				"name": "address_2",
+				"name": "last_name",
 				"type": "nvarchar"
 			},
 			{
-				"name": "address_3",
+				"name": "email",
 				"type": "nvarchar"
 			},
 			{
-				"name": "city",
-				"type": "nvarchar"
-			},
-			{
-				"name": "post_code",
-				"type": "nvarchar"
-			},
-			{
-				"name": "county",
-				"type": "nvarchar"
-			},
-			{
-				"name": "country",
-				"type": "nvarchar"
-			},
-			{
-				"name": "directions",
-				"type": "nvarchar"
-			},
-			{
-				"name": "approving_notes",
-				"type": "nvarchar"
-			},
-			{
-				"name": "code",
+				"name": "image",
 				"type": "nvarchar"
 			},
 			{
@@ -73,8 +45,21 @@
 				"type": "nvarchar"
 			},
 			{
+				"name": "notify_user",
+				"type": "bit"
+			},
+			{
+				"name": "role",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_access",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
 				"name": "client_id",
-				"type": "varchar"
+				"type": "nvarchar"
 			},
 			{
 				"name": "created_at",
@@ -85,22 +70,6 @@
 				"name": "modified_at",
 				"type": "datetimeoffset",
 				"scale": 7
-			},
-			{
-				"name": "org_level1",
-				"type": "nvarchar"
-			},
-			{
-				"name": "org_level2",
-				"type": "nvarchar"
-			},
-			{
-				"name": "org_level3",
-				"type": "nvarchar"
-			},
-			{
-				"name": "org_level4",
-				"type": "nvarchar"
 			},
 			{
 				"name": "entity_source",
@@ -114,7 +83,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "staging_Sites"
+			"table": "staging_Users"
 		}
 	}
 }
