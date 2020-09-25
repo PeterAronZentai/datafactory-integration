@@ -1,0 +1,28 @@
+{
+	"name": "ConvertExcelToTables",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Excel1",
+						"type": "DatasetReference"
+					},
+					"name": "Excel"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ErrorOutput",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"script": "source(output(\n\t\tOrder as string,\n\t\tClient as string,\n\t\tVisit as string,\n\t\tSite as string,\n\t\t{Premises Name} as string,\n\t\tAddress1 as string,\n\t\tAddress2 as string,\n\t\tAddress3 as string,\n\t\tCity as string,\n\t\t{Post Code} as string,\n\t\t{Item to order} as string,\n\t\t{Actual Visit Date} as string,\n\t\t{Actual Visit Time} as string,\n\t\t{AM / PM} as string,\n\t\t{Pass-Fail} as string,\n\t\t{Pass-Fail2} as string,\n\t\t{Abort Reason} as string,\n\t\t{Extra Site 1} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Excel\nExcel sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tVisit\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}
