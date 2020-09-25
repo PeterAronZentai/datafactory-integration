@@ -1,0 +1,89 @@
+{
+	"name": "TestImport",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehouseDevAuth",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Order",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Client",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Visit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Site",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Premises Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Address1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Address2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Address3",
+				"type": "nvarchar"
+			},
+			{
+				"name": "City",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Post Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Item to order",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Actual Visit Date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Actual Visit Time",
+				"type": "nvarchar"
+			},
+			{
+				"name": "AM / PM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Pass-Fail",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Pass-Fail2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Abort Reason",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Extra Site 1",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "test_visits"
+		}
+	}
+}
