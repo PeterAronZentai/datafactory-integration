@@ -1,0 +1,50 @@
+{
+	"name": "CalculateAverages",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Audits",
+						"type": "DatasetReference"
+					},
+					"name": "Audits"
+				},
+				{
+					"dataset": {
+						"referenceName": "Clients",
+						"type": "DatasetReference"
+					},
+					"name": "Clients"
+				},
+				{
+					"dataset": {
+						"referenceName": "Sites",
+						"type": "DatasetReference"
+					},
+					"name": "Sites"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "SiteClientId"
+				},
+				{
+					"name": "ClientType"
+				},
+				{
+					"name": "Join1"
+				},
+				{
+					"name": "Join2"
+				},
+				{
+					"name": "Aggregate1"
+				}
+			],
+			"script": "source(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Audits\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Clients\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Sites\nSites select(mapColumn(\n\t\tsite_id = id,\n\t\tsite_client_id = client_id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SiteClientId\nClients select(mapColumn(\n\t\tid,\n\t\tclient_type\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ClientType\nAudits, SiteClientId join(Audits@site_id == SiteClientId@site_id,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1, ClientType join(site_client_id == ClientType@id,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join2\nJoin2 aggregate() ~> Aggregate1"
+		}
+	}
+}
