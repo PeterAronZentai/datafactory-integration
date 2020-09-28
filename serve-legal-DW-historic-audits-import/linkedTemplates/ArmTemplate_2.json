@@ -13,15 +13,368 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/ComplexSyncClients')]",
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "SyncAVSClients",
-						"type": "ExecuteDataFlow",
+						"name": "Process Excel Upload",
+						"type": "Copy",
 						"dependsOn": [],
+						"policy": {
+							"timeout": "6.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": {
+									"value": "truncate table @{pipeline().parameters.TransferTableName}",
+									"type": "Expression"
+								},
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Client",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Client",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Visit",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Visit",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Site",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Site",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Premises Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Premises Name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Address1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Address1",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Address2",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Address2",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Address3",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Address3",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "City",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "City",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Post Code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Post Code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Item to order",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Item to order",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Actual Visit Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Actual Visit Date",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Actual Visit Time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Actual Visit Time",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "AM / PM",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "AM / PM",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass-Fail",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Pass-Fail",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass-Fail2",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Pass-Fail2",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Abort Reason",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Abort Reason",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Extra Site 1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Extra Site 1",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false,
+									"dateTimeFormat": "dd/MM/yyyy"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Excel1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": {
+										"value": "@pipeline().parameters.TransferTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Collect New Clients",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Process Excel Upload",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "6.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select Client, newid() UniqueId from @{pipeline().parameters.TransferTableName} GROUP BY Client",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "drop table if exists dbo.clients_importing",
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Client",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Client",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "UniqueId",
+											"type": "Guid"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing_noparam",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "clients_importing"
+								}
+							}
+						]
+					},
+					{
+						"name": "Put Clients into Warehouse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Collect New Clients",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -31,158 +384,3144 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataflow": {
-								"referenceName": "SyncAVSClients",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"StagingClient": {},
-									"ExistingClients": {},
-									"sink1": {
-										"table_name": "t_error"
-									},
-									"UpsertClient": {}
-								}
+							"source": {
+								"type": "AzureSqlSource",
+								"additionalColumns": [
+									{
+										"name": "Source",
+										"value": "Import"
+									}
+								],
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "CustomIntegrationRuntime",
-								"type": "IntegrationRuntimeReference"
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from Clients where entity_source = 'Import'",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Client",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Source"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
 							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "clients_importing"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Clients",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Collect New Orders",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Put Clients into Warehouse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select [Order], max([Item To Order]) item_to_order, \n(select top 1 id from clients where clients.internal_id = historic_3m_importing.Client) clientId,\nnewid() UniqueId \nfrom @{pipeline().parameters.TransferTableName}\nGROUP BY [Order], [Client]",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "drop table if exists orders_importing",
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										}
+									},
+									{
+										"source": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "clientId",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "ClientId"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing_noparam",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "orders_importing"
+								}
+							}
+						]
+					},
+					{
+						"name": "Put Orders into Warehouse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Collect New Orders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"additionalColumns": [
+									{
+										"name": "Source",
+										"value": "Import"
+									}
+								],
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from Orders where entity_source = 'Import'",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Source"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ClientId"
+										},
+										"sink": {
+											"name": "client_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "orders_importing"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Orders",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Collect New Sites",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Put Clients into Warehouse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "6.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select [Site], (select top 1 id from clients where clients.internal_id = @{pipeline().parameters.TransferTableName}.Client) clientId, newid() UniqueId  from @{pipeline().parameters.TransferTableName} GROUP BY [Site], [Client]",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "drop table if exists dbo.sites_importing",
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Site",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Site",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "UniqueId",
+											"type": "Guid"
+										}
+									},
+									{
+										"source": {
+											"name": "clientId",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "ClientId"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing_noparam",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "sites_importing"
+								}
+							}
+						]
+					},
+					{
+						"name": "If DoSomething",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Process Excel Upload",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().parameters.Feature",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "select Site, newid() UniqueId from @{pipeline().parameters.TransferTableName} GROUP BY Site",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"preCopyScript": "drop table if exists sites_importing",
+											"tableOption": "autoCreate",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "Site",
+														"type": "String",
+														"physicalType": "nvarchar"
+													},
+													"sink": {
+														"name": "Site",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "UniqueId",
+														"type": "Guid",
+														"physicalType": "uniqueidentifier"
+													},
+													"sink": {
+														"name": "UniqueId",
+														"type": "Guid"
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "azure_dw_importing_noparam",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "azure_dw_importing",
+											"type": "DatasetReference",
+											"parameters": {
+												"TableName": "sites_importing"
+											}
+										}
+									]
+								}
+							]
 						}
 					}
 				],
-				"annotations": []
+				"parameters": {
+					"TransferTableName": {
+						"type": "string",
+						"defaultValue": "historic_3m_importing"
+					},
+					"Feature": {
+						"type": "bool",
+						"defaultValue": false
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-09-07T15:15:49Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Process Excel Upload",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "6.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": {
+									"value": "IF OBJECT_ID('@{pipeline().parameters.TransferTableName}') IS NOT NULL \n  TRUNCATE TABLE @{pipeline().parameters.TransferTableName}\n",
+									"type": "Expression"
+								},
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Client",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Client",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Visit",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Visit",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Site",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Site",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Premises Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Premises Name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Address1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Address1",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Address2",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Address2",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Address3",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Address3",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "City",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "City",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Post Code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Post Code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Item to order",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Item to order",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Actual Visit Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Actual Visit Date",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Actual Visit Time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Actual Visit Time",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "AM / PM",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "AM / PM",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass-Fail",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Pass-Fail",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass-Fail2",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Pass-Fail2",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Abort Reason",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Abort Reason",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Extra Site 1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Extra Site 1",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false,
+									"dateTimeFormat": "dd/MM/yyyy"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Excel1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": {
+										"value": "@pipeline().parameters.TransferTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Collect New Clients",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Process Excel Upload",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "6.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select Client, newid() UniqueId from @{pipeline().parameters.TransferTableName} GROUP BY Client",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "drop table if exists dbo.clients_importing",
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Client",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Client",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "UniqueId",
+											"type": "Guid"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing_noparam",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "clients_importing"
+								}
+							}
+						]
+					},
+					{
+						"name": "Put Clients into Warehouse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Collect New Clients",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"additionalColumns": [
+									{
+										"name": "Source",
+										"value": "Import"
+									}
+								],
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from Clients where entity_source = 'Import'",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Client",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Source"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "clients_importing"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Clients",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Collect New Orders",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Put Clients into Warehouse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select [Order], max([Item To Order]) item_to_order, \n(select top 1 id from clients where clients.internal_id = @{pipeline().parameters.TransferTableName}.Client) clientId,\nnewid() UniqueId \nfrom @{pipeline().parameters.TransferTableName}\nGROUP BY [Order], [Client]",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "drop table if exists orders_importing",
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										}
+									},
+									{
+										"source": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "clientId",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "ClientId"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing_noparam",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "orders_importing"
+								}
+							}
+						]
+					},
+					{
+						"name": "Put Orders into Warehouse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Collect New Orders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"additionalColumns": [
+									{
+										"name": "Source",
+										"value": "Import"
+									}
+								],
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from Orders where entity_source = 'Import'",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Source"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ClientId"
+										},
+										"sink": {
+											"name": "client_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "orders_importing"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Orders",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Collect New Sites",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Put Clients into Warehouse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "6.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "WITH \n  unique_site_references AS (\n    SELECT \n      DISTINCT Site \n    FROM\n      -- historic_zed3_importing \n      @{pipeline().parameters.TransferTableName}\t\n    -- WHERE\n      -- Site not in select distinct internal_id from Sites\n  )\nSELECT \n  s.Site,\n  newid() UniqueId,\n  (select top 1 c.id from Clients c where c.internal_id = a.Client) ClientId,\n  a.Client,\n  a.Address1,\n  a.Address2,\n  a.Address3,\n  a.[Premises Name],\n  a.City,\n  a.[Post Code]\nFROM \n  unique_site_references s\nCROSS APPLY (\n  SELECT\n    top 1 i.* \n  FROM\n    -- historic_zed3_importing \n    @{pipeline().parameters.TransferTableName}\n    i\n  WHERE\n    i.Site = s.Site\n) a\n",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "drop table if exists dbo.sites_importing",
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Site",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Site",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "UniqueId",
+											"type": "Guid"
+										}
+									},
+									{
+										"source": {
+											"name": "ClientId",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "ClientId"
+										}
+									},
+									{
+										"source": {
+											"name": "Address1"
+										},
+										"sink": {
+											"name": "Address1"
+										}
+									},
+									{
+										"source": {
+											"name": "Address2"
+										},
+										"sink": {
+											"name": "Address2"
+										}
+									},
+									{
+										"source": {
+											"name": "Address3"
+										},
+										"sink": {
+											"name": "Address3"
+										}
+									},
+									{
+										"source": {
+											"name": "City"
+										},
+										"sink": {
+											"name": "City"
+										}
+									},
+									{
+										"source": {
+											"name": "Premises Name"
+										},
+										"sink": {
+											"name": "Premises Name"
+										}
+									},
+									{
+										"source": {
+											"name": "Post Code"
+										},
+										"sink": {
+											"name": "Post Code"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing_noparam",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "sites_importing"
+								}
+							}
+						]
+					},
+					{
+						"name": "Put Sites into Warehouse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Collect New Sites",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"additionalColumns": [
+									{
+										"name": "Source",
+										"value": "Import"
+									},
+									{
+										"name": "SiteStatus",
+										"value": "active"
+									}
+								],
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from Sites where entity_source = 'Import'",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Site",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ClientId"
+										},
+										"sink": {
+											"name": "client_id"
+										}
+									},
+									{
+										"source": {
+											"name": "Source"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Address1"
+										},
+										"sink": {
+											"name": "address_1"
+										}
+									},
+									{
+										"source": {
+											"name": "Address2"
+										},
+										"sink": {
+											"name": "address_2"
+										}
+									},
+									{
+										"source": {
+											"name": "Address3"
+										},
+										"sink": {
+											"name": "address_3"
+										}
+									},
+									{
+										"source": {
+											"name": "Post Code"
+										},
+										"sink": {
+											"name": "post_code"
+										}
+									},
+									{
+										"source": {
+											"name": "City"
+										},
+										"sink": {
+											"name": "city"
+										}
+									},
+									{
+										"source": {
+											"name": "Premises Name"
+										},
+										"sink": {
+											"name": "name"
+										}
+									},
+									{
+										"source": {
+											"name": "SiteStatus"
+										},
+										"sink": {
+											"name": "status"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "sites_importing"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Sites",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Collect New Audits",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Put Sites into Warehouse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Put Orders into Warehouse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "6.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select \n  hi.Visit,\n  isnull(audits.id, newid()) UniqueId,\n  case \n    when audits.id is null then 'new'\n    else 'update'\n  end UpdateStatus,\n  convert(\n    datetimeoffset,\n    concat(hi.[Actual Visit Date], ' ', cast(cast(hi.[Actual Visit Time] as time) as varchar(8)), [AM / PM]),\n    103) VisitDate,\n  sites.id SiteId,\n  orders.id OrderId,\n  [Pass-Fail],\n  [Pass-Fail2],\n  [Abort Reason],\n  [Item to order]\nfrom \n  @{pipeline().parameters.TransferTableName} hi\n    OUTER APPLY (\n      select a.id from Audits a where a.internal_id = hi.Visit\n    ) audits\n    OUTER APPLY (\n      select s.id from Sites s where s.internal_id = hi.Site\n    ) sites\n    OUTER APPLY (\n      select o.id from Orders o where o.internal_id = hi.[Order]\n    ) orders\t\n",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "drop table if exists dbo.audits_importing\ndelete from Audits where entity_source = 'Import'\n",
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Visit"
+										},
+										"sink": {
+											"name": "Visit"
+										}
+									},
+									{
+										"source": {
+											"name": "UniqueId"
+										},
+										"sink": {
+											"name": "UniqueId"
+										}
+									},
+									{
+										"source": {
+											"name": "SiteId"
+										},
+										"sink": {
+											"name": "SiteId"
+										}
+									},
+									{
+										"source": {
+											"name": "OrderId"
+										},
+										"sink": {
+											"name": "OrderId"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass-Fail"
+										},
+										"sink": {
+											"name": "Pass-Fail"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass-Fail2"
+										},
+										"sink": {
+											"name": "Pass-Fail2"
+										}
+									},
+									{
+										"source": {
+											"name": "UpdateStatus"
+										},
+										"sink": {
+											"name": "UpdateStatus"
+										}
+									},
+									{
+										"source": {
+											"name": "VisitDate"
+										},
+										"sink": {
+											"name": "VisitDate"
+										}
+									},
+									{
+										"source": {
+											"name": "Item to order"
+										},
+										"sink": {
+											"name": "Item to order"
+										}
+									},
+									{
+										"source": {
+											"name": "Abort Reason"
+										},
+										"sink": {
+											"name": "Abort Reason"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing_noparam",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "audits_importing"
+								}
+							}
+						]
+					},
+					{
+						"name": "Put Audits into Warehouse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Collect New Audits",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"additionalColumns": [
+									{
+										"name": "Source",
+										"value": "Import"
+									},
+									{
+										"name": "AuditStatus",
+										"value": "approved"
+									}
+								],
+								"sqlReaderQuery": {
+									"value": "select * from audits_importing where UpdateStatus = 'new'\n",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from Audits where entity_source = 'Import'",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "UniqueId",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Visit"
+										},
+										"sink": {
+											"name": "internal_id"
+										}
+									},
+									{
+										"source": {
+											"name": "Source"
+										},
+										"sink": {
+											"name": "entity_source"
+										}
+									},
+									{
+										"source": {
+											"name": "OrderId"
+										},
+										"sink": {
+											"name": "order_id"
+										}
+									},
+									{
+										"source": {
+											"name": "SiteId"
+										},
+										"sink": {
+											"name": "site_id"
+										}
+									},
+									{
+										"source": {
+											"name": "VisitDate"
+										},
+										"sink": {
+											"name": "date_of_visit"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass-Fail"
+										},
+										"sink": {
+											"name": "survey_result"
+										}
+									},
+									{
+										"source": {
+											"name": "Item to order"
+										},
+										"sink": {
+											"name": "item_to_order"
+										}
+									},
+									{
+										"source": {
+											"name": "AuditStatus"
+										},
+										"sink": {
+											"name": "status"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_dw_importing",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "audits_importing"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Audits",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "If DoSomething",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Process Excel Upload",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().parameters.Feature",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "select Site, newid() UniqueId from @{pipeline().parameters.TransferTableName} GROUP BY Site",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"preCopyScript": "drop table if exists sites_importing",
+											"tableOption": "autoCreate",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "Site",
+														"type": "String",
+														"physicalType": "nvarchar"
+													},
+													"sink": {
+														"name": "Site",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "UniqueId",
+														"type": "Guid",
+														"physicalType": "uniqueidentifier"
+													},
+													"sink": {
+														"name": "UniqueId",
+														"type": "Guid"
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "azure_dw_importing_noparam",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "azure_dw_importing",
+											"type": "DatasetReference",
+											"parameters": {
+												"TableName": "sites_importing"
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"TransferTableName": {
+						"type": "string",
+						"defaultValue": "historic_importing"
+					},
+					"Feature": {
+						"type": "bool",
+						"defaultValue": false
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-09-07T15:15:49Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CalculateAverages')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "Audits"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "Clients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "Sites"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimYesNo",
+								"type": "DatasetReference"
+							},
+							"name": "DimYesNo"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "VariableTable",
+								"type": "DatasetReference"
+							},
+							"name": "TDailyByClientType"
+						},
+						{
+							"dataset": {
+								"referenceName": "VariableTable",
+								"type": "DatasetReference"
+							},
+							"name": "TClientTypes"
+						},
+						{
+							"dataset": {
+								"referenceName": "VariableTable",
+								"type": "DatasetReference"
+							},
+							"name": "TProducts"
+						},
+						{
+							"dataset": {
+								"referenceName": "VariableTable",
+								"type": "DatasetReference"
+							},
+							"name": "TDailyByProdyct"
+						},
+						{
+							"dataset": {
+								"referenceName": "VariableTable",
+								"type": "DatasetReference"
+							},
+							"name": "TAverageByProduct"
+						},
+						{
+							"dataset": {
+								"referenceName": "VariableTable",
+								"type": "DatasetReference"
+							},
+							"name": "TDailyByClientTypeProduct"
+						},
+						{
+							"dataset": {
+								"referenceName": "VariableTable",
+								"type": "DatasetReference"
+							},
+							"name": "TMonthlyByClientTypeProduct"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SiteClientId"
+						},
+						{
+							"name": "ClientType"
+						},
+						{
+							"name": "JoinSite"
+						},
+						{
+							"name": "JoinClient"
+						},
+						{
+							"name": "Aggregate1"
+						},
+						{
+							"name": "SurveyResult"
+						},
+						{
+							"name": "PickImportantColumns"
+						},
+						{
+							"name": "TrueFalseResultCount"
+						},
+						{
+							"name": "OnlyActiveStatus"
+						},
+						{
+							"name": "Aggregate2"
+						},
+						{
+							"name": "Aggregate3"
+						},
+						{
+							"name": "Aggregate4"
+						},
+						{
+							"name": "CalculateFields"
+						},
+						{
+							"name": "DayByClientTypeProduct"
+						},
+						{
+							"name": "AverageByProduct"
+						},
+						{
+							"name": "Aggregate6"
+						}
+					],
+					"script": "source(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Audits\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Clients\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Sites\nsource(output(\n\t\tid as integer,\n\t\tbitValue as boolean,\n\t\tstringValue as string,\n\t\tvalueType as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimYesNo\nSites select(mapColumn(\n\t\tsite_id = id,\n\t\tsite_client_id = client_id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SiteClientId\nClients select(mapColumn(\n\t\tid,\n\t\tclient_type\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ClientType\nSurveyResult, SiteClientId join(PickImportantColumns@site_id == SiteClientId@site_id,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinSite\nJoinSite, ClientType join(site_client_id == ClientType@id,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinClient\nJoinClient aggregate(groupBy(date_of_visit,\n\t\tclient_type),\n\ttrue_result_count = sum(true_result_count),\n\t\tfalse_result_count = sum(false_result_count),\n\t\ttotal_count = count(),\n\t\ttrue_percentage = sum(true_result_count) / count(),\n\t\tfalse_percentage = sum(false_result_count) / count()) ~> Aggregate1\nCalculateFields, TrueFalseResultCount join(lower(survey_result) == lower(stringValue),\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> SurveyResult\nOnlyActiveStatus select(mapColumn(\n\t\tid,\n\t\tquery_category,\n\t\tsurvey_result,\n\t\tdate_of_visit,\n\t\tstatus,\n\t\tsite_id,\n\t\titem_to_order\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> PickImportantColumns\nDimYesNo derive(bitValue = bitValue,\n\t\tstringValue = stringValue,\n\t\ttrue_result_count = iif(bitValue, 1, 0),\n\t\tfalse_result_count = iif(bitValue, 0, 1)) ~> TrueFalseResultCount\nAudits filter(status == 'approved') ~> OnlyActiveStatus\nJoinClient aggregate(groupBy(client_type),\n\tcount = count(),\n\t\ttrue_percent = sum(true_result_count) / count()) ~> Aggregate2\nSurveyResult aggregate(groupBy(item_to_order),\n\tcount = count(),\n\t\ttrue_percent = sum(true_result_count) / count()) ~> Aggregate3\nSurveyResult aggregate(groupBy(item_to_order,\n\t\tdate_of_visit),\n\tcount = count(),\n\t\ttrue_percent = sum(true_result_count) / count(),\n\t\tfalse_percent = sum(false_result_count) / count()) ~> Aggregate4\nPickImportantColumns derive(date_of_visit = toDate(regexExtract(date_of_visit,'....-..-..',0),'yyyy-MM-dd'),\n\t\tmonth_of_visit = toDate(regexExtract(date_of_visit,'....-..',0),'yyyy-MM')) ~> CalculateFields\nJoinClient aggregate(groupBy(client_type,\n\t\titem_to_order,\n\t\tdate_of_visit),\n\tcount = count(),\n\t\ttrue_percent = sum(true_result_count) / count(),\n\t\tfalse_percent = sum(false_result_count) / count()) ~> DayByClientTypeProduct\nSurveyResult aggregate(groupBy(item_to_order),\n\tcount = count()) ~> AverageByProduct\nJoinClient aggregate(groupBy(month_of_visit,\n\t\titem_to_order,\n\t\tclient_type),\n\tcount = count(),\n\t\ttrue_percent = sum(true_result_count) / count(),\n\t\tfalse_percent = sum(false_result_count) / count()) ~> Aggregate6\nAggregate1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> TDailyByClientType\nAggregate2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tclient_type,\n\t\tcount,\n\t\ttrue_percent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> TClientTypes\nAggregate3 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> TProducts\nAggregate4 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\titem_to_order,\n\t\tdate_of_visit,\n\t\tcount,\n\t\ttrue_percent,\n\t\tfalse_percent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> TDailyByProdyct\nAverageByProduct sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> TAverageByProduct\nDayByClientTypeProduct sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> TDailyByClientTypeProduct\nAggregate6 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> TMonthlyByClientTypeProduct"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ConvertExcelToTables')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Excel1",
+								"type": "DatasetReference"
+							},
+							"name": "Excel"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ErrorOutput",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "VariableTable",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Filter1"
+						}
+					],
+					"script": "parameters{\n\tclient_to_export as string ('CLIENT5')\n}\nsource(output(\n\t\tOrder as string,\n\t\tClient as string,\n\t\tVisit as string,\n\t\tSite as string,\n\t\t{Premises Name} as string,\n\t\tAddress1 as string,\n\t\tAddress2 as string,\n\t\tAddress3 as string,\n\t\tCity as string,\n\t\t{Post Code} as string,\n\t\t{Item to order} as string,\n\t\t{Actual Visit Date} as string,\n\t\t{Actual Visit Time} as string,\n\t\t{AM / PM} as string,\n\t\t{Pass-Fail} as string,\n\t\t{Pass-Fail2} as string,\n\t\t{Abort Reason} as string,\n\t\t{Extra Site 1} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Excel\nExcel filter(Client == $client_to_export) ~> Filter1\nExcel sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tVisit\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink2"
+				}
 			},
 			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/HistoricalDataImport')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "HistoricalDataImport",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HistoricalDataImport",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"InputExcel": {},
-									"ExistingClients": {},
-									"ExistingSites": {},
-									"ExistingOrders": {},
-									"ExistingAudits": {},
-									"MergedClients": {},
-									"MergedSites": {},
-									"MergedOrders": {},
-									"MergedAudits": {}
-								}
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "AzureBlobStorage1",
+								"type": "LinkedServiceReference"
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
+							"name": "InputExcel"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingClients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingSites"
+						},
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingAudits"
 						}
-					}
-				],
-				"annotations": []
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "MergedClients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "MergedSites"
+						},
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "MergedOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "MergedAudits"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExistingCliendIds"
+						},
+						{
+							"name": "UniqueClients"
+						},
+						{
+							"name": "ClientsLookedUp"
+						},
+						{
+							"name": "ComputedColumns"
+						},
+						{
+							"name": "ExcludeEmpty"
+						},
+						{
+							"name": "ExcludeAVSOwned"
+						},
+						{
+							"name": "EstablishMerge"
+						},
+						{
+							"name": "UniqueSites"
+						},
+						{
+							"name": "ExistingSiteIds"
+						},
+						{
+							"name": "SiteLookedUp"
+						},
+						{
+							"name": "ComputedSiteColumns"
+						},
+						{
+							"name": "ClientLookedUp"
+						},
+						{
+							"name": "ExcludeAVSOwnedSites"
+						},
+						{
+							"name": "EstablishSiteMerge"
+						},
+						{
+							"name": "UniqueOrders"
+						},
+						{
+							"name": "OrderClientsLookup"
+						},
+						{
+							"name": "ComputedOrderColumns"
+						},
+						{
+							"name": "EstablishOrderMerge"
+						},
+						{
+							"name": "ExistingOrderIds"
+						},
+						{
+							"name": "ExistingOrdersLoookup"
+						},
+						{
+							"name": "ExistingAuditIds"
+						},
+						{
+							"name": "AuditsLookup"
+						},
+						{
+							"name": "ComputedAuditColumns"
+						},
+						{
+							"name": "AuditSiteLookup"
+						},
+						{
+							"name": "AuditOrderLookup"
+						},
+						{
+							"name": "EstablishAuditMerge"
+						}
+					],
+					"script": "source(output(\n\t\tOrder as string,\n\t\tClient as string,\n\t\tVisit as string,\n\t\tSite as string,\n\t\t{Premises Name} as string,\n\t\tAddress1 as string,\n\t\tAddress2 as string,\n\t\tAddress3 as string,\n\t\tCity as string,\n\t\t{Post Code} as string,\n\t\t{Item to order} as string,\n\t\t{Actual Visit Date} as date 'dd/MM/yyyy',\n\t\t{Actual Visit Time} as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss.SSS\\'Z\\'',\n\t\t{AM / PM} as string,\n\t\t{Pass-Fail} as string,\n\t\t{Pass-Fail2} as string,\n\t\t{Abort Reason} as string,\n\t\t{Extra Site 1} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'excel',\n\tcontainer: 'audits',\n\tfileName: '3 year data v3.xlsx',\n\tsheetName: '3 year data v1',\n\tfirstRowAsHeader: true) ~> InputExcel\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingClients\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingSites\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingOrders\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingAudits\nExistingClients select(mapColumn(\n\t\texisting_client_id = id,\n\t\texisting_client_legacy_id = legacy_id,\n\t\texisting_client_entity_source = entity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingCliendIds\nExcludeEmpty aggregate(groupBy(Client),\n\tname = max(Client)) ~> UniqueClients\nUniqueClients, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> ClientsLookedUp\nClientsLookedUp derive(id = coalesce(existing_client_id, Client),\n\t\tstatus = 'active',\n\t\tlegacy_id = coalesce(existing_client_legacy_id, Client),\n\t\tentity_source = 'historical-import') ~> ComputedColumns\nInputExcel filter(!isNull(Client)) ~> ExcludeEmpty\nComputedColumns filter(isNull(existing_client_entity_source) || existing_client_entity_source != 'AVS') ~> ExcludeAVSOwned\nExcludeAVSOwned alterRow(insertIf(isNull(existing_client_id)),\n\tupdateIf(!isNull(existing_client_id))) ~> EstablishMerge\nExcludeEmpty aggregate(groupBy(Site),\n\tClient = max(Client),\n\t\t{Premises Name} = max({Premises Name}),\n\t\tAddress1 = max(Address1),\n\t\tAddress2 = max(Address2),\n\t\tAddress3 = max(Address3),\n\t\tCity = max(City),\n\t\t{Post Code} = max({Post Code})) ~> UniqueSites\nExistingSites select(mapColumn(\n\t\texisting_site_id = id,\n\t\texisting_site_legacy_id = legacy_id,\n\t\texisting_site_entity_source = entity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingSiteIds\nUniqueSites, ExistingSiteIds lookup(Site == existing_site_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_site_id, true),\n\tbroadcast: 'auto')~> SiteLookedUp\nClientLookedUp derive(id = coalesce(existing_site_id, Site),\n\t\tlegacy_id = Site,\n\t\tclient_id = coalesce(existing_client_legacy_id, Client),\n\t\tstatus = 'active',\n\t\tentity_source = 'historic-import') ~> ComputedSiteColumns\nSiteLookedUp, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> ClientLookedUp\nComputedSiteColumns filter(isNull(existing_site_id) || existing_site_entity_source != 'AVS') ~> ExcludeAVSOwnedSites\nExcludeAVSOwnedSites alterRow(insertIf(isNull(existing_site_id)),\n\tupdateIf(!isNull(existing_site_id))) ~> EstablishSiteMerge\nExcludeEmpty aggregate(groupBy(Order),\n\t{Item to order} = max({Item to order}),\n\t\tClient = max(Client)) ~> UniqueOrders\nUniqueOrders, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> OrderClientsLookup\nOrderClientsLookup derive(client_id = coalesce(existing_client_id, Client),\n\t\tstatus = 'active',\n\t\texclude_from_client_reporting = false(),\n\t\tid = Order,\n\t\tlegacy_id = Order,\n\t\tentity_source = 'historic-import') ~> ComputedOrderColumns\nExistingOrdersLoookup alterRow(insertIf(isNull(existing_order_id)),\n\tupdateIf(true())) ~> EstablishOrderMerge\nExistingOrders select(mapColumn(\n\t\texisting_order_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingOrderIds\nComputedOrderColumns, ExistingOrderIds lookup(Order == existing_order_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_order_id, true),\n\tbroadcast: 'auto')~> ExistingOrdersLoookup\nExistingAudits select(mapColumn(\n\t\texisting_audit_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingAuditIds\nExcludeEmpty, ExistingAuditIds lookup(Visit == existing_audit_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_audit_id, true),\n\tbroadcast: 'auto')~> AuditsLookup\nAuditOrderLookup derive(id = Visit,\n\t\torder_id = coalesce(existing_order_id, Order),\n\t\tsite_id = coalesce(existing_site_id, Site),\n\t\tlegacy_id = Visit,\n\t\tdate_of_visit = concat(toString({Actual Visit Date}, 'yyyy-MM-dd'),' ', toString(hour({Actual Visit Time}), '00'), ':', toString(minute({Actual Visit Time}), '00'), ':', toString(second({Actual Visit Time}), '00'), {AM / PM}),\n\t\tstatus = 'approved') ~> ComputedAuditColumns\nAuditsLookup, ExistingSiteIds lookup(Site == existing_site_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_site_id, true),\n\tbroadcast: 'auto')~> AuditSiteLookup\nAuditSiteLookup, ExistingOrderIds lookup(Order == existing_order_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_order_id, true),\n\tbroadcast: 'auto')~> AuditOrderLookup\nComputedAuditColumns alterRow(insertIf(isNull(existing_audit_id)),\n\tupdateIf(true())) ~> EstablishAuditMerge\nEstablishMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tname,\n\t\tstatus,\n\t\tlegacy_id,\n\t\tstatus,\n\t\tentity_source,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedClients\nEstablishSiteMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tlegacy_id,\n\t\tname = {Premises Name},\n\t\taddress_1 = Address1,\n\t\taddress_2 = Address2,\n\t\taddress_3 = Address3,\n\t\tcity = City,\n\t\tpost_code = {Post Code},\n\t\tstatus,\n\t\tclient_id,\n\t\tentity_source,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedSites\nEstablishOrderMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\titem_to_order = {Item to order},\n\t\texclude_from_client_reporting,\n\t\tstatus,\n\t\tclient_id,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedOrders\nEstablishAuditMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tdate_of_visit,\n\t\tstatus,\n\t\torder_id,\n\t\tsite_id,\n\t\titem_to_order = {Item to order},\n\t\tsurvey_result = {Pass-Fail}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedAudits"
+				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SimpleSyncClients')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/HistoricalDataImport2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "SimpleMergeClient",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "SimpleMergeClient",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"StagingClients": {},
-									"ExistingClients": {},
-									"MergedClients": {}
-								}
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "AzureBlobStorage1",
+								"type": "LinkedServiceReference"
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
+							"name": "InputExcel"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingClients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingSites"
+						},
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingAudits"
 						}
-					}
-				],
-				"annotations": []
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "MergedClients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "MergedSites"
+						},
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "MergedOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "MergedAudits"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExistingCliendIds"
+						},
+						{
+							"name": "UniqueClients"
+						},
+						{
+							"name": "ClientsLookedUp"
+						},
+						{
+							"name": "ComputedColumns"
+						},
+						{
+							"name": "ExcludeEmpty"
+						},
+						{
+							"name": "ExcludeAVSOwned"
+						},
+						{
+							"name": "EstablishMerge"
+						},
+						{
+							"name": "UniqueSites"
+						},
+						{
+							"name": "ExistingSiteIds"
+						},
+						{
+							"name": "SiteLookedUp"
+						},
+						{
+							"name": "ComputedSiteColumns"
+						},
+						{
+							"name": "ClientLookedUp"
+						},
+						{
+							"name": "ExcludeAVSOwnedSites"
+						},
+						{
+							"name": "EstablishSiteMerge"
+						},
+						{
+							"name": "UniqueOrders"
+						},
+						{
+							"name": "OrderClientsLookup"
+						},
+						{
+							"name": "ComputedOrderColumns"
+						},
+						{
+							"name": "EstablishOrderMerge"
+						},
+						{
+							"name": "ExistingOrderIds"
+						},
+						{
+							"name": "ExistingOrdersLoookup"
+						},
+						{
+							"name": "ExistingAuditIds"
+						},
+						{
+							"name": "AuditsLookup"
+						},
+						{
+							"name": "ComputedAuditColumns"
+						},
+						{
+							"name": "AuditSiteLookup"
+						},
+						{
+							"name": "AuditOrderLookup"
+						},
+						{
+							"name": "EstablishAuditMerge"
+						}
+					],
+					"script": "source(output(\n\t\tOrder as string,\n\t\tClient as string,\n\t\tVisit as string,\n\t\tSite as string,\n\t\t{Premises Name} as string,\n\t\tAddress1 as string,\n\t\tAddress2 as string,\n\t\tAddress3 as string,\n\t\tCity as string,\n\t\t{Post Code} as string,\n\t\t{Item to order} as string,\n\t\t{Actual Visit Date} as date 'dd/MM/yyyy',\n\t\t{Actual Visit Time} as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss.SSS\\'Z\\'',\n\t\t{AM / PM} as string,\n\t\t{Pass-Fail} as string,\n\t\t{Pass-Fail2} as string,\n\t\t{Abort Reason} as string,\n\t\t{Extra Site 1} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'excel',\n\tcontainer: 'audits',\n\tfileName: '3 year data v3.xlsx',\n\tsheetName: '3 year data v1',\n\tfirstRowAsHeader: true) ~> InputExcel\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingClients\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingSites\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingOrders\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingAudits\nExistingClients select(mapColumn(\n\t\texisting_client_id = id,\n\t\texisting_client_legacy_id = legacy_id,\n\t\texisting_client_entity_source = entity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingCliendIds\nExcludeEmpty aggregate(groupBy(Client),\n\tname = max(Client)) ~> UniqueClients\nUniqueClients, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> ClientsLookedUp\nClientsLookedUp derive(id = coalesce(existing_client_id, Client),\n\t\tstatus = 'active',\n\t\tlegacy_id = coalesce(existing_client_legacy_id, Client),\n\t\tentity_source = 'historical-import') ~> ComputedColumns\nInputExcel filter(!isNull(Client)) ~> ExcludeEmpty\nComputedColumns filter(isNull(existing_client_entity_source) || existing_client_entity_source != 'AVS') ~> ExcludeAVSOwned\nExcludeAVSOwned alterRow(insertIf(isNull(existing_client_id)),\n\tupdateIf(!isNull(existing_client_id))) ~> EstablishMerge\nExcludeEmpty aggregate(groupBy(Site),\n\tClient = max(Client),\n\t\t{Premises Name} = max({Premises Name}),\n\t\tAddress1 = max(Address1),\n\t\tAddress2 = max(Address2),\n\t\tAddress3 = max(Address3),\n\t\tCity = max(City),\n\t\t{Post Code} = max({Post Code})) ~> UniqueSites\nExistingSites select(mapColumn(\n\t\texisting_site_id = id,\n\t\texisting_site_legacy_id = legacy_id,\n\t\texisting_site_entity_source = entity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingSiteIds\nUniqueSites, ExistingSiteIds lookup(Site == existing_site_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_site_id, true),\n\tbroadcast: 'auto')~> SiteLookedUp\nClientLookedUp derive(id = coalesce(existing_site_id, Site),\n\t\tlegacy_id = Site,\n\t\tclient_id = coalesce(existing_client_legacy_id, Client),\n\t\tstatus = 'active',\n\t\tentity_source = 'historic-import') ~> ComputedSiteColumns\nSiteLookedUp, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> ClientLookedUp\nComputedSiteColumns filter(isNull(existing_site_id) || existing_site_entity_source != 'AVS') ~> ExcludeAVSOwnedSites\nExcludeAVSOwnedSites alterRow(insertIf(isNull(existing_site_id)),\n\tupdateIf(!isNull(existing_site_id))) ~> EstablishSiteMerge\nExcludeEmpty aggregate(groupBy(Order),\n\t{Item to order} = max({Item to order}),\n\t\tClient = max(Client)) ~> UniqueOrders\nUniqueOrders, ExistingCliendIds lookup(Client == existing_client_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_client_id, true),\n\tbroadcast: 'auto')~> OrderClientsLookup\nOrderClientsLookup derive(client_id = coalesce(existing_client_id, Client),\n\t\tstatus = 'active',\n\t\texclude_from_client_reporting = false(),\n\t\tid = Order,\n\t\tlegacy_id = Order,\n\t\tentity_source = 'historic-import') ~> ComputedOrderColumns\nExistingOrdersLoookup alterRow(insertIf(isNull(existing_order_id)),\n\tupdateIf(true())) ~> EstablishOrderMerge\nExistingOrders select(mapColumn(\n\t\texisting_order_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingOrderIds\nComputedOrderColumns, ExistingOrderIds lookup(Order == existing_order_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_order_id, true),\n\tbroadcast: 'auto')~> ExistingOrdersLoookup\nExistingAudits select(mapColumn(\n\t\texisting_audit_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingAuditIds\nExcludeEmpty, ExistingAuditIds lookup(Visit == existing_audit_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_audit_id, true),\n\tbroadcast: 'auto')~> AuditsLookup\nAuditOrderLookup derive(id = Visit,\n\t\torder_id = coalesce(existing_order_id, Order),\n\t\tsite_id = coalesce(existing_site_id, Site),\n\t\tlegacy_id = Visit,\n\t\tdate_of_visit = concat(toString({Actual Visit Date}, 'yyyy-MM-dd'),' ', toString(hour({Actual Visit Time}), '00'), ':', toString(minute({Actual Visit Time}), '00'), ':', toString(second({Actual Visit Time}), '00'), {AM / PM}),\n\t\tstatus = 'approved') ~> ComputedAuditColumns\nAuditsLookup, ExistingSiteIds lookup(Site == existing_site_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_site_id, true),\n\tbroadcast: 'auto')~> AuditSiteLookup\nAuditSiteLookup, ExistingOrderIds lookup(Order == existing_order_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_order_id, true),\n\tbroadcast: 'auto')~> AuditOrderLookup\nComputedAuditColumns alterRow(insertIf(isNull(existing_audit_id)),\n\tupdateIf(true())) ~> EstablishAuditMerge\nEstablishMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tname,\n\t\tstatus,\n\t\tlegacy_id,\n\t\tstatus,\n\t\tentity_source,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedClients\nEstablishSiteMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tlegacy_id,\n\t\tname = {Premises Name},\n\t\taddress_1 = Address1,\n\t\taddress_2 = Address2,\n\t\taddress_3 = Address3,\n\t\tcity = City,\n\t\tpost_code = {Post Code},\n\t\tstatus,\n\t\tclient_id,\n\t\tentity_source,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedSites\nEstablishOrderMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\titem_to_order = {Item to order},\n\t\texclude_from_client_reporting,\n\t\tstatus,\n\t\tclient_id,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedOrders\nEstablishAuditMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tdate_of_visit,\n\t\tstatus,\n\t\torder_id,\n\t\tsite_id,\n\t\titem_to_order = {Item to order},\n\t\tsurvey_result = {Pass-Fail}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedAudits"
+				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/merge-imported-data')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/SimpleMergeClient')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "dataflow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflow1",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"PreClientsSource": {},
-									"ClientsTarget": {},
-									"ClientsHistoricSource": {},
-									"WriteToClients": {}
-								}
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Clients",
+								"type": "DatasetReference"
 							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "CustomIntegrationRuntime",
-								"type": "IntegrationRuntimeReference"
-							}
+							"name": "StagingClients"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingClients"
 						}
-					}
-				],
-				"annotations": []
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "MergedClients"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExistingClientIds"
+						},
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StagingClients\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingClients\nExistingClients select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingClientIds\nStagingClients, ExistingClientIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MergedClients"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWAnswers')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Answers",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Answers",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Answers",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttype as string,\n\t\tvalue as string,\n\t\thidden as boolean,\n\t\taudit_id as string,\n\t\tquestion_template_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttype as string,\n\t\tvalue as string,\n\t\thidden as boolean,\n\t\taudit_id as string,\n\t\tquestion_template_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttype as string,\n\t\tvalue as string,\n\t\thidden as boolean,\n\t\taudit_id as string,\n\t\tquestion_template_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\ttype,\n\t\tvalue,\n\t\thidden,\n\t\taudit_id,\n\t\tquestion_template_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWAuditors')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Auditors",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Auditors",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Auditors",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "Existingds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\temail_settings as boolean,\n\t\tpassport as string,\n\t\tidentification as string,\n\t\tcountry as string,\n\t\thonorific as string,\n\t\tgender as string,\n\t\tdate_of_birth as string,\n\t\tmarital_status as string,\n\t\toccupation as string,\n\t\tni_pps as string,\n\t\thome_address_1 as string,\n\t\thome_address_2 as string,\n\t\thome_city as string,\n\t\thome_post_code as string,\n\t\thome_county as string,\n\t\tterm_address_1 as string,\n\t\tterm_address_2 as string,\n\t\tterm_city as string,\n\t\tterm_post_code as string,\n\t\tterm_county as string,\n\t\tmobile_number as string,\n\t\thome_number as string,\n\t\tnotes as string,\n\t\thear_about_us as string,\n\t\thear_about_us_details as string,\n\t\trecommended_by as string,\n\t\temail_communication as boolean,\n\t\tservelegal_community as boolean,\n\t\tcard_name as string,\n\t\tbank_country as string,\n\t\taccount_number as string,\n\t\tsort_code as string,\n\t\tswift_code as string,\n\t\tiban_number as string,\n\t\tcircumstances as string,\n\t\tstudent_loans as string,\n\t\taccess_to_car as string,\n\t\twhy_servelegal as string,\n\t\tabout_yourself as string,\n\t\ttravel_outside as string,\n\t\tauditor_status as string,\n\t\tuser_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\temail_settings as boolean,\n\t\tpassport as string,\n\t\tidentification as string,\n\t\tcountry as string,\n\t\thonorific as string,\n\t\tgender as string,\n\t\tdate_of_birth as string,\n\t\tmarital_status as string,\n\t\toccupation as string,\n\t\tni_pps as string,\n\t\thome_address_1 as string,\n\t\thome_address_2 as string,\n\t\thome_city as string,\n\t\thome_post_code as string,\n\t\thome_county as string,\n\t\tterm_address_1 as string,\n\t\tterm_address_2 as string,\n\t\tterm_city as string,\n\t\tterm_post_code as string,\n\t\tterm_county as string,\n\t\tmobile_number as string,\n\t\thome_number as string,\n\t\tnotes as string,\n\t\thear_about_us as string,\n\t\thear_about_us_details as string,\n\t\trecommended_by as string,\n\t\temail_communication as boolean,\n\t\tservelegal_community as boolean,\n\t\tcard_name as string,\n\t\tbank_country as string,\n\t\taccount_number as string,\n\t\tsort_code as string,\n\t\tswift_code as string,\n\t\tiban_number as string,\n\t\tcircumstances as string,\n\t\tstudent_loans as string,\n\t\taccess_to_car as string,\n\t\twhy_servelegal as string,\n\t\tabout_yourself as string,\n\t\ttravel_outside as string,\n\t\tauditor_status as string,\n\t\tuser_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, Existingds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Existingds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\temail_settings as boolean,\n\t\tpassport as string,\n\t\tidentification as string,\n\t\tcountry as string,\n\t\thonorific as string,\n\t\tgender as string,\n\t\tdate_of_birth as string,\n\t\tmarital_status as string,\n\t\toccupation as string,\n\t\tni_pps as string,\n\t\thome_address_1 as string,\n\t\thome_address_2 as string,\n\t\thome_city as string,\n\t\thome_post_code as string,\n\t\thome_county as string,\n\t\tterm_address_1 as string,\n\t\tterm_address_2 as string,\n\t\tterm_city as string,\n\t\tterm_post_code as string,\n\t\tterm_county as string,\n\t\tmobile_number as string,\n\t\thome_number as string,\n\t\tnotes as string,\n\t\thear_about_us as string,\n\t\thear_about_us_details as string,\n\t\trecommended_by as string,\n\t\temail_communication as boolean,\n\t\tservelegal_community as boolean,\n\t\tcard_name as string,\n\t\tbank_country as string,\n\t\taccount_number as string,\n\t\tsort_code as string,\n\t\tswift_code as string,\n\t\tiban_number as string,\n\t\tcircumstances as string,\n\t\tstudent_loans as string,\n\t\taccess_to_car as string,\n\t\twhy_servelegal as string,\n\t\tabout_yourself as string,\n\t\ttravel_outside as string,\n\t\tauditor_status as string,\n\t\tuser_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\temail_settings,\n\t\tpassport,\n\t\tidentification,\n\t\tcountry,\n\t\thonorific,\n\t\tgender,\n\t\tdate_of_birth,\n\t\tmarital_status,\n\t\toccupation,\n\t\tni_pps,\n\t\thome_address_1,\n\t\thome_address_2,\n\t\thome_city,\n\t\thome_post_code,\n\t\thome_county,\n\t\tterm_address_1,\n\t\tterm_address_2,\n\t\tterm_city,\n\t\tterm_post_code,\n\t\tterm_county,\n\t\tmobile_number,\n\t\thome_number,\n\t\tnotes,\n\t\thear_about_us,\n\t\thear_about_us_details,\n\t\trecommended_by,\n\t\temail_communication,\n\t\tservelegal_community,\n\t\tcard_name,\n\t\tbank_country,\n\t\taccount_number,\n\t\tsort_code,\n\t\tswift_code,\n\t\tiban_number,\n\t\tcircumstances,\n\t\tstudent_loans,\n\t\taccess_to_car,\n\t\twhy_servelegal,\n\t\tabout_yourself,\n\t\ttravel_outside,\n\t\tauditor_status,\n\t\tuser_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWAudits')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Audits",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Audits",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tquery_notes as string,\n\t\tquery_category as string,\n\t\tsurvey_result as string,\n\t\tvisit_info as string,\n\t\tsubmitted_date as string,\n\t\tapproval_date as string,\n\t\tdeadline_date as string,\n\t\tdate_of_visit as string,\n\t\tpurchase_cost as double,\n\t\tallowance as double,\n\t\tmileage as double,\n\t\tentrance_charge as double,\n\t\ttravel_expenses as double,\n\t\ttravel_expenses_type as string,\n\t\ttravel_expenses_description as string,\n\t\treclaimable_expenses as double,\n\t\treclaimable_expenses_type as string,\n\t\treclaimable_expenses_description as string,\n\t\tpaid as boolean,\n\t\tbatched as boolean,\n\t\tpayroll_date as string,\n\t\tpay_date as string,\n\t\temail_note as string,\n\t\tstatus as string,\n\t\torder_id as string,\n\t\tsite_id as string,\n\t\tapproved_by_id as string,\n\t\tauditor_id as string,\n\t\titem_to_order as string,\n\t\tauditor_instructions as string,\n\t\tauditor_pay_per_audit as double,\n\t\tapproving_notes as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tquery_notes,\n\t\tquery_category,\n\t\tsurvey_result,\n\t\tvisit_info,\n\t\tsubmitted_date,\n\t\tapproval_date,\n\t\tdeadline_date,\n\t\tdate_of_visit,\n\t\tpurchase_cost,\n\t\tallowance,\n\t\tmileage,\n\t\tentrance_charge,\n\t\ttravel_expenses,\n\t\ttravel_expenses_type,\n\t\ttravel_expenses_description,\n\t\treclaimable_expenses,\n\t\treclaimable_expenses_type,\n\t\treclaimable_expenses_description,\n\t\tpaid,\n\t\tbatched,\n\t\tpayroll_date,\n\t\tpay_date,\n\t\temail_note,\n\t\tstatus,\n\t\torder_id,\n\t\tsite_id,\n\t\tapproved_by_id,\n\t\tauditor_id,\n\t\titem_to_order,\n\t\tauditor_instructions,\n\t\tauditor_pay_per_audit,\n\t\tapproving_notes,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWClients')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Clients",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWOrders')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Orders",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tschedule_type,\n\t\titem_to_order,\n\t\torder_info,\n\t\tvisits_to_be_billed,\n\t\tstart_date,\n\t\tend_date,\n\t\tauditor_pay_per_audit,\n\t\tclient_charge_per_audit,\n\t\tauditor_instructions,\n\t\temail_subject,\n\t\temail_survey_result,\n\t\texclude_from_client_reporting,\n\t\tnarv_visits_only,\n\t\tstatus,\n\t\tcurrency,\n\t\tclient_id,\n\t\trevision_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWQuestionTemplates')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_QuestionTemplates",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "QuestionTemplates",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "QuestionTemplates",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\ttype as string,\n\t\tconfig as string,\n\t\tcategory as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\ttype as string,\n\t\tconfig as string,\n\t\tcategory as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\ttype as string,\n\t\tconfig as string,\n\t\tcategory as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\thelp,\n\t\ttitle,\n\t\trequired,\n\t\ttype,\n\t\tconfig,\n\t\tcategory,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWQuestions')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Questions",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "staging_Questions",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Questions",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\thelp,\n\t\ttype,\n\t\ttitle,\n\t\trequired,\n\t\tcategory,\n\t\tconfig,\n\t\tquestion_template_id,\n\t\trevision_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWRevisions')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Revisions",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Revisions",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Revisions",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tstatus as string,\n\t\tname as string,\n\t\tsurvey_id as string,\n\t\tblocked as boolean,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tstatus as string,\n\t\tname as string,\n\t\tsurvey_id as string,\n\t\tblocked as boolean,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tstatus as string,\n\t\tname as string,\n\t\tsurvey_id as string,\n\t\tblocked as boolean,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tstatus,\n\t\tname,\n\t\tsurvey_id,\n\t\tblocked,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWSites')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Sites",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\taddress_1,\n\t\taddress_2,\n\t\taddress_3,\n\t\tcity,\n\t\tpost_code,\n\t\tcounty,\n\t\tcountry,\n\t\tdirections,\n\t\tapproving_notes,\n\t\tcode,\n\t\tstatus,\n\t\tclient_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1,\n\t\torg_level2,\n\t\torg_level3,\n\t\torg_level4,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWSurveys')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Surveys",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Surveys",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Surveys",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\ttitle,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWUsers')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Users",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Users",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Users",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tfirst_name as string,\n\t\tmiddle_name as string,\n\t\tlast_name as string,\n\t\temail as string,\n\t\timage as string,\n\t\tstatus as string,\n\t\tnotify_user as boolean,\n\t\trole as string,\n\t\tlast_access as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tfirst_name as string,\n\t\tmiddle_name as string,\n\t\tlast_name as string,\n\t\temail as string,\n\t\timage as string,\n\t\tstatus as string,\n\t\tnotify_user as boolean,\n\t\trole as string,\n\t\tlast_access as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tfirst_name as string,\n\t\tmiddle_name as string,\n\t\tlast_name as string,\n\t\temail as string,\n\t\timage as string,\n\t\tstatus as string,\n\t\tnotify_user as boolean,\n\t\trole as string,\n\t\tlast_access as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tfirst_name,\n\t\tmiddle_name,\n\t\tlast_name,\n\t\temail,\n\t\timage,\n\t\tstatus,\n\t\tnotify_user,\n\t\trole,\n\t\tlast_access,\n\t\tclient_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SyncAVSClients')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Clients",
+								"type": "DatasetReference"
+							},
+							"name": "StagingClient"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingClients"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ErrorOutput",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "UpsertClient"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExistingClientIds"
+						},
+						{
+							"name": "CheckIdConsistency"
+						},
+						{
+							"name": "LookupByLegacyId"
+						},
+						{
+							"name": "LookupByGuid"
+						},
+						{
+							"name": "MergeDecision"
+						},
+						{
+							"name": "ExistingLegacyClientId"
+						},
+						{
+							"name": "ExistingLegacyClients"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StagingClient\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingClients\nExistingClients select(mapColumn(\n\t\te_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingClientIds\nLookupByLegacyId split(!isNull(existing_legacy_id) && (id != existing_id),\n\tdisjoint: false) ~> CheckIdConsistency@(InconsistentLegacyId, ConsistentOrNewClients)\nStagingClient, ExistingLegacyClientId lookup(legacy_id == existing_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupByLegacyId\nCheckIdConsistency@ConsistentOrNewClients, ExistingClientIds lookup(id == e_id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupByGuid\nLookupByGuid alterRow(insertIf(isNull(e_id)),\n\tupdateIf(!isNull(e_id))) ~> MergeDecision\nExistingLegacyClients select(mapColumn(\n\t\texisting_legacy_id = legacy_id,\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingLegacyClientId\nExistingClients filter(!isNull(legacy_id)) ~> ExistingLegacyClients\nCheckIdConsistency@InconsistentLegacyId sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\trow_id,\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source,\n\t\tinsert_date,\n\t\texisting_legacy_id,\n\t\texisting_id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1\nMergeDecision sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UpsertClient"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/selfhosted')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ErrorOutput",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
 			},
 			"dependsOn": []
 		}
