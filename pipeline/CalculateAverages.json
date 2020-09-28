@@ -1,0 +1,39 @@
+{
+	"name": "CalculateAverages",
+	"properties": {
+		"activities": [
+			{
+				"name": "CalculateAverages",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "CalculateAverages",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"AverageByClientType": {
+								"TableName": "AverageByClientType"
+							},
+							"ClientTypes": {
+								"TableName": "ClientTypes"
+							}
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "CustomIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
