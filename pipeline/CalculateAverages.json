@@ -19,16 +19,16 @@
 						"referenceName": "CalculateAverages",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"AverageByClientType": {
+							"TDailyByClientType": {
 								"TableName": "AverageByClientType"
 							},
-							"ClientTypes": {
+							"TClientTypes": {
 								"TableName": "ClientTypes"
 							},
-							"Products": {
+							"TProducts": {
 								"TableName": "Products"
 							},
-							"AverageByProduct": {
+							"TDailyByProdyct": {
 								"TableName": "AverageByProduct"
 							}
 						}
