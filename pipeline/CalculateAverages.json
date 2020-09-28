@@ -20,7 +20,7 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"TDailyByClientType": {
-								"TableName": "AverageByClientType"
+								"TableName": "Avg_Daily_ClientType_Product"
 							},
 							"TClientTypes": {
 								"TableName": "ClientTypes"
@@ -29,7 +29,16 @@
 								"TableName": "Products"
 							},
 							"TDailyByProdyct": {
-								"TableName": "AverageByProduct"
+								"TableName": "Avg_Daily_Product"
+							},
+							"TAverageByProduct": {
+								"TableName": "Avg_Product"
+							},
+							"TDailyByClientTypeProduct": {
+								"TableName": "Avg_Daily_ClientType_Product"
+							},
+							"TMonthlyByClientTypeProduct": {
+								"TableName": "Avg_Monthly_ClientType_Product"
 							}
 						}
 					},
