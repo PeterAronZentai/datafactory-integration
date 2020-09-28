@@ -27,6 +27,9 @@
 							},
 							"Products": {
 								"TableName": "Products"
+							},
+							"AverageByProduct": {
+								"TableName": "AverageByProduct"
 							}
 						}
 					},
