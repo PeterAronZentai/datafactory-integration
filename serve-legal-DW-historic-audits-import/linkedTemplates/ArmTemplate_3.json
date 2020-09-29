@@ -65,7 +65,7 @@
 							},
 							"staging": {},
 							"integrationRuntime": {
-								"referenceName": "CustomIntegrationRuntime",
+								"referenceName": "ZeroTTLIntegrationRuntime",
 								"type": "IntegrationRuntimeReference"
 							}
 						}

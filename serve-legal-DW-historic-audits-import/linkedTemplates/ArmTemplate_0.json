@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "serve-legal-DW-historic-audits-import"
 		},
-		"AzureBlobStorage1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
-		},
 		"AzureDataLakeAnalytics1_servicePrincipalKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataLakeAnalytics1'"
@@ -30,6 +26,10 @@
 		"SQLDataWarehouseDev_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehouseDev'"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
 		"SQLDataWarehouseDevAuth_connectionString": {
 			"type": "secureString",
@@ -94,29 +94,12 @@
 		"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
 			"type": "string",
 			"defaultValue": "serve-legal-powerbi-dev"
-		},
-		"RestService1_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://index.hu"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureDataLakeAnalytics1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -207,21 +190,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RestService1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('RestService1_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/SQLDataWarehouseDev')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -254,103 +222,23 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Excel1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/ZeroTTLIntegrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
+				"type": "Managed",
 				"typeProperties": {
-					"sheetName": "3 year data v1",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "3 year data v3.xlsx",
-						"container": "audits"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "Order",
-						"type": "String"
-					},
-					{
-						"name": "Client",
-						"type": "String"
-					},
-					{
-						"name": "Visit",
-						"type": "String"
-					},
-					{
-						"name": "Site",
-						"type": "String"
-					},
-					{
-						"name": "Premises Name",
-						"type": "String"
-					},
-					{
-						"name": "Address1",
-						"type": "String"
-					},
-					{
-						"name": "Address2",
-						"type": "String"
-					},
-					{
-						"name": "Address3",
-						"type": "String"
-					},
-					{
-						"name": "City",
-						"type": "String"
-					},
-					{
-						"name": "Post Code",
-						"type": "String"
-					},
-					{
-						"name": "Item to order",
-						"type": "String"
-					},
-					{
-						"name": "Actual Visit Date",
-						"type": "String"
-					},
-					{
-						"name": "Actual Visit Time",
-						"type": "String"
-					},
-					{
-						"name": "AM / PM",
-						"type": "String"
-					},
-					{
-						"name": "Pass-Fail",
-						"type": "String"
-					},
-					{
-						"name": "Pass-Fail2",
-						"type": "String"
-					},
-					{
-						"name": "Abort Reason",
-						"type": "String"
-					},
-					{
-						"name": "Extra Site 1",
-						"type": "String"
+					"computeProperties": {
+						"location": "West Europe",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
 					}
-				]
+				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/azure_dw_importing')]",
@@ -594,6 +482,25 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ZeroTTLIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ZeroTTLIntegrationRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SQLDataWarehouseDevAuth')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -604,12 +511,12 @@
 					"connectionString": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
 				},
 				"connectVia": {
-					"referenceName": "CustomIntegrationRuntime",
+					"referenceName": "ZeroTTLIntegrationRuntime",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/CustomIntegrationRuntime')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/ZeroTTLIntegrationRuntime')]"
 			]
 		},
 		{
@@ -1252,6 +1159,105 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Excel1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "3 year data v1",
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "3 year data v3.xlsx",
+						"container": "audits"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Order",
+						"type": "String"
+					},
+					{
+						"name": "Client",
+						"type": "String"
+					},
+					{
+						"name": "Visit",
+						"type": "String"
+					},
+					{
+						"name": "Site",
+						"type": "String"
+					},
+					{
+						"name": "Premises Name",
+						"type": "String"
+					},
+					{
+						"name": "Address1",
+						"type": "String"
+					},
+					{
+						"name": "Address2",
+						"type": "String"
+					},
+					{
+						"name": "Address3",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "Post Code",
+						"type": "String"
+					},
+					{
+						"name": "Item to order",
+						"type": "String"
+					},
+					{
+						"name": "Actual Visit Date",
+						"type": "String"
+					},
+					{
+						"name": "Actual Visit Time",
+						"type": "String"
+					},
+					{
+						"name": "AM / PM",
+						"type": "String"
+					},
+					{
+						"name": "Pass-Fail",
+						"type": "String"
+					},
+					{
+						"name": "Pass-Fail2",
+						"type": "String"
+					},
+					{
+						"name": "Abort Reason",
+						"type": "String"
+					},
+					{
+						"name": "Extra Site 1",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
 			]
 		}
 	]

@@ -94,10 +94,6 @@
 		"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
 			"type": "string",
 			"defaultValue": "serve-legal-powerbi-dev"
-		},
-		"RestService1_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://index.hu"
 		}
 	},
 	"variables": {
@@ -157,7 +153,7 @@
 							},
 							"staging": {},
 							"integrationRuntime": {
-								"referenceName": "CustomIntegrationRuntime",
+								"referenceName": "ZeroTTLIntegrationRuntime",
 								"type": "IntegrationRuntimeReference"
 							}
 						}
@@ -167,7 +163,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/CalculateAverages')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/CustomIntegrationRuntime')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/ZeroTTLIntegrationRuntime')]"
 			]
 		},
 		{
@@ -7063,9 +7059,15 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ZeroTTLIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ZeroTTLIntegrationRuntime')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureDataLakeAnalytics1')]",
@@ -7157,21 +7159,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RestService1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('RestService1_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/SQLDataWarehouseDev')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -7195,12 +7182,12 @@
 					"connectionString": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
 				},
 				"connectVia": {
-					"referenceName": "CustomIntegrationRuntime",
+					"referenceName": "ZeroTTLIntegrationRuntime",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/CustomIntegrationRuntime')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/ZeroTTLIntegrationRuntime')]"
 			]
 		},
 		{
@@ -7216,6 +7203,25 @@
 							"computeType": "General",
 							"coreCount": 8,
 							"timeToLive": 30
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ZeroTTLIntegrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "West Europe",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
 						}
 					}
 				}
