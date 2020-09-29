@@ -6,10 +6,6 @@
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
 			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=serve-legal-reports-warehouse-dev.database.windows.net;Initial Catalog=serve-legal-reports-dev"
-		},
-		"connectVia": {
-			"referenceName": "ZeroTTLIntegrationRuntime",
-			"type": "IntegrationRuntimeReference"
 		}
 	}
 }
