@@ -13,259 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Orders')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "schedule_type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "item_to_order",
-						"type": "nvarchar"
-					},
-					{
-						"name": "order_info",
-						"type": "nvarchar"
-					},
-					{
-						"name": "visits_to_be_billed",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "start_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "end_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "auditor_pay_per_audit",
-						"type": "nvarchar"
-					},
-					{
-						"name": "client_charge_per_audit",
-						"type": "nvarchar"
-					},
-					{
-						"name": "auditor_instructions",
-						"type": "nvarchar"
-					},
-					{
-						"name": "email_subject",
-						"type": "nvarchar"
-					},
-					{
-						"name": "email_survey_result",
-						"type": "nvarchar"
-					},
-					{
-						"name": "exclude_from_client_reporting",
-						"type": "bit"
-					},
-					{
-						"name": "narv_visits_only",
-						"type": "bit"
-					},
-					{
-						"name": "status",
-						"type": "nvarchar"
-					},
-					{
-						"name": "currency",
-						"type": "nvarchar"
-					},
-					{
-						"name": "client_id",
-						"type": "varchar"
-					},
-					{
-						"name": "revision_id",
-						"type": "varchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Orders"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/QuestionTemplates')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "help",
-						"type": "nvarchar"
-					},
-					{
-						"name": "title",
-						"type": "nvarchar"
-					},
-					{
-						"name": "required",
-						"type": "bit"
-					},
-					{
-						"name": "type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "config",
-						"type": "nvarchar"
-					},
-					{
-						"name": "category",
-						"type": "nvarchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "QuestionTemplates"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Questions')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "help",
-						"type": "nvarchar"
-					},
-					{
-						"name": "type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "title",
-						"type": "nvarchar"
-					},
-					{
-						"name": "required",
-						"type": "bit"
-					},
-					{
-						"name": "category",
-						"type": "nvarchar"
-					},
-					{
-						"name": "config",
-						"type": "nvarchar"
-					},
-					{
-						"name": "question_template_id",
-						"type": "varchar"
-					},
-					{
-						"name": "revision_id",
-						"type": "varchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Questions"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Revisions')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -686,6 +433,49 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/azure_dw_importing')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azure_dw_importing_noparam')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/staging_Answers')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -972,6 +762,198 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "staging_Auditors"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/staging_Audits')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQLDataWarehouseDev",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "row_id",
+						"type": "varchar"
+					},
+					{
+						"name": "id",
+						"type": "varchar"
+					},
+					{
+						"name": "internal_id",
+						"type": "varchar"
+					},
+					{
+						"name": "query_notes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "query_category",
+						"type": "nvarchar"
+					},
+					{
+						"name": "survey_result",
+						"type": "nvarchar"
+					},
+					{
+						"name": "visit_info",
+						"type": "nvarchar"
+					},
+					{
+						"name": "submitted_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "approval_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "deadline_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "date_of_visit",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "purchase_cost",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "allowance",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "mileage",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "entrance_charge",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "travel_expenses",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "travel_expenses_type",
+						"type": "nvarchar"
+					},
+					{
+						"name": "travel_expenses_description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "reclaimable_expenses",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "reclaimable_expenses_type",
+						"type": "nvarchar"
+					},
+					{
+						"name": "reclaimable_expenses_description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "paid",
+						"type": "bit"
+					},
+					{
+						"name": "batched",
+						"type": "bit"
+					},
+					{
+						"name": "payroll_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "pay_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "email_note",
+						"type": "nvarchar"
+					},
+					{
+						"name": "status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "order_id",
+						"type": "varchar"
+					},
+					{
+						"name": "site_id",
+						"type": "varchar"
+					},
+					{
+						"name": "approved_by_id",
+						"type": "varchar"
+					},
+					{
+						"name": "auditor_id",
+						"type": "varchar"
+					},
+					{
+						"name": "item_to_order",
+						"type": "nvarchar"
+					},
+					{
+						"name": "auditor_instructions",
+						"type": "nvarchar"
+					},
+					{
+						"name": "auditor_pay_per_audit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "approving_notes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "created_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "modified_at",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "entity_source",
+						"type": "nvarchar"
+					},
+					{
+						"name": "insert_date",
+						"type": "datetimeoffset",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "staging_Audits"
 				}
 			},
 			"dependsOn": []
@@ -3009,7 +2991,8 @@
 				"lastPublishTime": "2020-09-07T15:15:49Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Orders')]",
+				"[concat(variables('factoryId'), '/datasets/azure_dw_importing')]",
+				"[concat(variables('factoryId'), '/datasets/azure_dw_importing_noparam')]",
 				"[concat(variables('factoryId'), '/datasets/Sites')]"
 			]
 		}

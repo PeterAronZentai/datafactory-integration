@@ -122,6 +122,9 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureBlobStorage1_connectionString": {
+						"value": "[parameters('AzureBlobStorage1_connectionString')]"
+					},
 					"AzureDataLakeAnalytics1_servicePrincipalKey": {
 						"value": "[parameters('AzureDataLakeAnalytics1_servicePrincipalKey')]"
 					},
@@ -136,9 +139,6 @@
 					},
 					"SQLDataWarehouseDev_connectionString": {
 						"value": "[parameters('SQLDataWarehouseDev_connectionString')]"
-					},
-					"AzureBlobStorage1_connectionString": {
-						"value": "[parameters('AzureBlobStorage1_connectionString')]"
 					},
 					"SQLDataWarehouseDevAuth_connectionString": {
 						"value": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
