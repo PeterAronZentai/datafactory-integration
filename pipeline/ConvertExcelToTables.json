@@ -18,6 +18,9 @@
 					"dataflow": {
 						"referenceName": "ConvertExcelToTables",
 						"type": "DataFlowReference",
+						"parameters": {
+							"client_to_export": "'CLIENT5'"
+						},
 						"datasetParameters": {
 							"sink1": {
 								"table_name": "imported_visits"
