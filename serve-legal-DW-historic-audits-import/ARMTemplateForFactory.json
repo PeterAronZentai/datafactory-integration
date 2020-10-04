@@ -234,7 +234,9 @@
 							"dataflow": {
 								"referenceName": "ConvertExcelToTables",
 								"type": "DataFlowReference",
-								"parameters": {},
+								"parameters": {
+									"client_to_export": "'CLIENT5'"
+								},
 								"datasetParameters": {
 									"Excel": {},
 									"sink1": {
@@ -258,6 +260,70 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/ConvertExcelToTables')]",
 				"[concat(variables('factoryId'), '/integrationRuntimes/CustomIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ExportHistoricalToTable')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Excel1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "VariableTable",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "HistoricalData"
+								}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Excel1')]",
+				"[concat(variables('factoryId'), '/datasets/VariableTable')]"
 			]
 		},
 		{
