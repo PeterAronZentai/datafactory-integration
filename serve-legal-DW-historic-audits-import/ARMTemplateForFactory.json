@@ -581,9 +581,9 @@
 								}
 							},
 							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "CustomIntegrationRuntime",
-								"type": "IntegrationRuntimeReference"
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
 							}
 						}
 					}
@@ -591,8 +591,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/HistoricalDataImport')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/CustomIntegrationRuntime')]"
+				"[concat(variables('factoryId'), '/dataflows/HistoricalDataImport')]"
 			]
 		},
 		{
@@ -677,7 +676,14 @@
 					{
 						"name": "StagingToDWAuditors",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "StagingToDWOrders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -707,7 +713,14 @@
 					{
 						"name": "StagingToDWQuestionTemplates",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "StagingToDWAuditors",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -737,7 +750,14 @@
 					{
 						"name": "StagingToDWRevisions",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "StagingToDWQuestionTemplates",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -767,7 +787,14 @@
 					{
 						"name": "StagingToDWAudits",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "StagingToDWRevisions",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -797,7 +824,14 @@
 					{
 						"name": "StagingToDWSurveys",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "StagingToDWAudits",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -827,7 +861,14 @@
 					{
 						"name": "StagingToDWUsers",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "StagingToDWSurveys",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -857,7 +898,14 @@
 					{
 						"name": "StagingToDWQuestions",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "StagingToDWUsers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -887,7 +935,14 @@
 					{
 						"name": "StagingToDWAnswers",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "StagingToDWQuestions",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -899,6 +954,140 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWAnswers",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Staging": {},
+									"Existing": {},
+									"Merge": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					},
+					{
+						"name": "StagingToDWClients",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "StagingToDWAnswers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "StagingToDWClients",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Staging": {},
+									"Existing": {},
+									"Merge": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					},
+					{
+						"name": "StagingToDWSites",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "StagingToDWClients",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "StagingToDWSites",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Staging": {},
+									"Existing": {},
+									"Merge": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWOrders')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWAuditors')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWQuestionTemplates')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWRevisions')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWAudits')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWSurveys')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWUsers')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWQuestions')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWAnswers')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWClients')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWEntities_Partial')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "StagingToDWSites",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "StagingToDWClients",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "StagingToDWSites",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -943,52 +1132,13 @@
 								"computeType": "General"
 							}
 						}
-					},
-					{
-						"name": "StagingToDWSites",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "StagingToDWSites",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWOrders')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWAuditors')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWQuestionTemplates')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWRevisions')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWAudits')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWSurveys')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWUsers')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWQuestions')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWAnswers')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWClients')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]"
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWClients')]"
 			]
 		},
 		{
@@ -7470,7 +7620,7 @@
 				"type": "Managed",
 				"typeProperties": {
 					"computeProperties": {
-						"location": "West Europe",
+						"location": "AutoResolve",
 						"dataFlowProperties": {
 							"computeType": "General",
 							"coreCount": 8,

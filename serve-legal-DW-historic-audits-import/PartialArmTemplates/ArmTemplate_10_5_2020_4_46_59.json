@@ -13,191 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/selfhosted')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "Clients",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ErrorOutput",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [],
-					"script": "source(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CalculateAverages')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "CalculateAverages",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "CalculateAverages",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Audits": {},
-									"Clients": {},
-									"Sites": {},
-									"DimYesNo": {},
-									"TDailyByClientType": {
-										"TableName": "Avg_Daily_ClientType_Product"
-									},
-									"TClientTypes": {
-										"TableName": "ClientTypes"
-									},
-									"TProducts": {
-										"TableName": "Products"
-									},
-									"TDailyByProdyct": {
-										"TableName": "Avg_Daily_Product"
-									},
-									"TAverageByProduct": {
-										"TableName": "Avg_Product"
-									},
-									"TDailyByClientTypeProduct": {
-										"TableName": "Avg_Daily_ClientType_Product"
-									},
-									"TMonthlyByClientTypeProduct": {
-										"TableName": "Avg_Monthly_ClientType_Product"
-									}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ComplexSyncClients')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "SyncAVSClients",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "SyncAVSClients",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"StagingClient": {},
-									"ExistingClients": {},
-									"sink1": {
-										"table_name": "t_error"
-									},
-									"UpsertClient": {}
-								}
-							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "CustomIntegrationRuntime",
-								"type": "IntegrationRuntimeReference"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ConvertExcelToTables')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ConvertExcelToTables",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "ConvertExcelToTables",
-								"type": "DataFlowReference",
-								"parameters": {
-									"client_to_export": "'CLIENT5'"
-								},
-								"datasetParameters": {
-									"Excel": {},
-									"sink1": {
-										"table_name": "imported_visits"
-									},
-									"sink2": {
-										"TableName": "test_visits"
-									}
-								}
-							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "CustomIntegrationRuntime",
-								"type": "IntegrationRuntimeReference"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/HistoricalDataImport')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -218,62 +33,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "HistoricalDataImport",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"InputExcel": {},
-									"ExistingClients": {},
-									"ExistingSites": {},
-									"ExistingOrders": {},
-									"ExistingAudits": {},
-									"MergedClients": {},
-									"MergedSites": {},
-									"MergedOrders": {},
-									"MergedAudits": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SimpleSyncClients')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "SimpleMergeClient",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "SimpleMergeClient",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"StagingClients": {},
-									"ExistingClients": {},
-									"MergedClients": {}
-								}
-							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -306,15 +67,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWOrders",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -343,15 +97,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWAuditors",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -380,15 +127,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWQuestionTemplates",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -417,15 +157,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWRevisions",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -454,15 +187,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWAudits",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -491,15 +217,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWSurveys",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -528,15 +247,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWUsers",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -565,15 +277,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWQuestions",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -602,15 +307,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWAnswers",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -639,15 +337,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWClients",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -676,15 +367,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWSites",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -724,15 +408,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWSites",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -754,15 +431,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "StagingToDWClients",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
