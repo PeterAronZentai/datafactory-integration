@@ -19,9 +19,9 @@
 						"referenceName": "HistoricalDataImport",
 						"type": "DataFlowReference"
 					},
-					"integrationRuntime": {
-						"referenceName": "CustomIntegrationRuntime",
-						"type": "IntegrationRuntimeReference"
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					}
 				}
 			}
