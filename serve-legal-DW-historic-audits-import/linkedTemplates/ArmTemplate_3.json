@@ -285,7 +285,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "HistoricalDataImport",
+						"name": "HistoricalDataImport_AuditsOnly",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -298,7 +298,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "HistoricalDataImport",
+								"referenceName": "HistoricalDataImport_AuditsOnly",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -307,8 +307,6 @@
 									"ExistingSites": {},
 									"ExistingOrders": {},
 									"ExistingAudits": {},
-									"MergedClients": {},
-									"MergedSites": {},
 									"MergedOrders": {},
 									"MergedAudits": {}
 								}
@@ -323,7 +321,9 @@
 				],
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/HistoricalDataImport_AuditsOnly')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SimpleSyncClients')]",
