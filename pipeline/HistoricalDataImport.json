@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "HistoricalDataImport",
+				"name": "HistoricalDataImport_AuditsOnly",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "HistoricalDataImport",
+						"referenceName": "HistoricalDataImport_AuditsOnly",
 						"type": "DataFlowReference"
 					},
 					"compute": {
