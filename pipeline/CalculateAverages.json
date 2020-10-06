@@ -39,6 +39,9 @@
 							},
 							"TMonthlyByClientTypeProduct": {
 								"TableName": "Avg_Monthly_ClientType_Product"
+							},
+							"TWeeklyByClientTypeProduct": {
+								"TableName": "Avg_Weekly_ClientType_Product"
 							}
 						}
 					},
