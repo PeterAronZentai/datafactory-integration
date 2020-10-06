@@ -94,6 +94,9 @@
 									},
 									"TWeeklyByClientTypeProduct": {
 										"TableName": "Avg_Weekly_ClientType_Product"
+									},
+									"TWeeklyByClient": {
+										"TableName": "Avg_Weekly_ClientType"
 									}
 								}
 							},
@@ -160,6 +163,9 @@
 									},
 									"TWeeklyByClientTypeProduct": {
 										"TableName": "Avg_Weekly_ClientType_Product_TEST"
+									},
+									"TWeeklyByClient": {
+										"TableName": "Avg_Weekly_ClientType_TEST"
 									}
 								}
 							},
