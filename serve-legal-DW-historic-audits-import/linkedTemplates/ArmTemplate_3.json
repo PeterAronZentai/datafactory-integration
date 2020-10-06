@@ -110,6 +110,72 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/CalculateAverages_Test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CalculateAverages",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "CalculateAverages",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Audits": {},
+									"Clients": {},
+									"Sites": {},
+									"DimYesNo": {},
+									"TDailyByClientType": {
+										"TableName": "Avg_Daily_ClientType_Product_TEST"
+									},
+									"TClientTypes": {
+										"TableName": "ClientTypes_TEST"
+									},
+									"TProducts": {
+										"TableName": "Products_TEST"
+									},
+									"TDailyByProdyct": {
+										"TableName": "Avg_Daily_Product_TEST"
+									},
+									"TAverageByProduct": {
+										"TableName": "Avg_Product_TEST"
+									},
+									"TDailyByClientTypeProduct": {
+										"TableName": "Avg_Daily_ClientType_Product_TEST"
+									},
+									"TMonthlyByClientTypeProduct": {
+										"TableName": "Avg_Monthly_ClientType_Product_TEST"
+									},
+									"TWeeklyByClientTypeProduct": {
+										"TableName": "Avg_Weekly_ClientType_Product_TEST"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ComplexSyncClients')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -761,72 +827,6 @@
 									"Staging": {},
 									"Existing": {},
 									"Merge": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CalculateAverages_Test')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "CalculateAverages",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "CalculateAverages",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Audits": {},
-									"Clients": {},
-									"Sites": {},
-									"DimYesNo": {},
-									"TDailyByClientType": {
-										"TableName": "Avg_Daily_ClientType_Product_TEST"
-									},
-									"TClientTypes": {
-										"TableName": "ClientTypes_TEST"
-									},
-									"TProducts": {
-										"TableName": "Products_TEST"
-									},
-									"TDailyByProdyct": {
-										"TableName": "Avg_Daily_Product_TEST"
-									},
-									"TAverageByProduct": {
-										"TableName": "Avg_Product_TEST"
-									},
-									"TDailyByClientTypeProduct": {
-										"TableName": "Avg_Daily_ClientType_Product_TEST"
-									},
-									"TMonthlyByClientTypeProduct": {
-										"TableName": "Avg_Monthly_ClientType_Product_TEST"
-									},
-									"TWeeklyByClientTypeProduct": {
-										"TableName": "Avg_Weekly_ClientType_Product_TEST"
-									}
 								}
 							},
 							"staging": {},
