@@ -1,5 +1,5 @@
 {
-	"name": "AVS to DW merge",
+	"name": "AVS to Staging",
 	"properties": {
 		"activities": [
 			{
