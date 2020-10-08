@@ -1,0 +1,55 @@
+{
+	"name": "ClientReports",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehouseDevAuth",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Id",
+				"type": "varchar"
+			},
+			{
+				"name": "ClientId",
+				"type": "varchar"
+			},
+			{
+				"name": "ReportTemplateId",
+				"type": "varchar"
+			},
+			{
+				"name": "ReportName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ReportId",
+				"type": "varchar"
+			},
+			{
+				"name": "WorkspaceId",
+				"type": "varchar"
+			},
+			{
+				"name": "Created_at",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "Updated_at",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "DataSourceId",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "ClientReports"
+		}
+	}
+}
