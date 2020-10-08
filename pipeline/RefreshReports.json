@@ -11,6 +11,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Get Admin User",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -28,7 +34,7 @@
 						"Content-Type": "application/x-www-form-urlencoded"
 					},
 					"body": {
-						"value": "grant_type=password&client_id=4187986e-76b7-434c-9c73-3b23d505e1f0&resource=https://analysis.windows.net/powerbi/api&scope=openid&username=guidesmiths-admin@servelegal.co.uk&password=Dub79705",
+						"value": "grant_type=password&client_id=4187986e-76b7-434c-9c73-3b23d505e1f0&resource=https://analysis.windows.net/powerbi/api&scope=openid&username=@{activity('Get Admin User').output.value}&password=@{activity('Get Admin PW').output.value}",
 						"type": "Expression"
 					}
 				}
@@ -126,6 +132,27 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": "https://serve-legal-reports.vault.azure.net/secrets/serve-legal-powerbi-admin-pwd?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Get Admin User",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://serve-legal-reports.vault.azure.net/secrets/serve-legal-powerbi-admin-user?api-version=7.0",
 					"method": "GET",
 					"authentication": {
 						"type": "MSI",
