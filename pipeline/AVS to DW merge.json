@@ -200,7 +200,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Answers",
+						"referenceName": "staging_Answers",
 						"type": "DatasetReference"
 					}
 				]
@@ -821,7 +821,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Auditors",
+						"referenceName": "staging_Auditors",
 						"type": "DatasetReference"
 					}
 				]
@@ -1321,7 +1321,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Audits",
+						"referenceName": "staging_Audits",
 						"type": "DatasetReference"
 					}
 				]
@@ -1612,7 +1612,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Clients",
+						"referenceName": "staging_Clients",
 						"type": "DatasetReference"
 					}
 				]
@@ -1980,7 +1980,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Orders",
+						"referenceName": "staging_Orders",
 						"type": "DatasetReference"
 					}
 				]
@@ -2249,7 +2249,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Questions",
+						"referenceName": "staging_Questions",
 						"type": "DatasetReference"
 					}
 				]
@@ -2496,7 +2496,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "QuestionTemplates",
+						"referenceName": "staging_QuestionTemplates",
 						"type": "DatasetReference"
 					}
 				]
@@ -2721,7 +2721,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Revisions",
+						"referenceName": "staging_Revisions",
 						"type": "DatasetReference"
 					}
 				]
@@ -3100,7 +3100,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Sites",
+						"referenceName": "staging_Sites",
 						"type": "DatasetReference"
 					}
 				]
@@ -3292,7 +3292,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Surveys",
+						"referenceName": "staging_Surveys",
 						"type": "DatasetReference"
 					}
 				]
@@ -3583,7 +3583,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Users",
+						"referenceName": "staging_Users",
 						"type": "DatasetReference"
 					}
 				]
