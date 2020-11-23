@@ -112,7 +112,8 @@
 										"value": "Bearer @{activity('Get PowerBI Auth').output.access_token}",
 										"type": "Expression"
 									}
-								}
+								},
+								"body": "{ok: 1}"
 							}
 						}
 					]
