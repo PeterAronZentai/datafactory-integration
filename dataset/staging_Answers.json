@@ -2,7 +2,7 @@
 	"name": "staging_Answers",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "SQLDataWarehouseDevAuth",
+			"referenceName": "SQLDataWarehousePRODAuth",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

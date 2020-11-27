@@ -234,7 +234,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -1355,7 +1355,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -1646,7 +1646,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -2014,7 +2014,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -2283,7 +2283,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -2530,7 +2530,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -2755,7 +2755,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -3134,7 +3134,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -3326,7 +3326,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -3617,7 +3617,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -3637,7 +3637,7 @@
 					"storedProcedureName": "[dbo].[sp_truncate_staging_tables]"
 				},
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				}
 			},

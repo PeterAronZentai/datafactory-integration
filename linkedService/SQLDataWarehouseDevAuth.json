@@ -1,5 +1,5 @@
 {
-	"name": "SQLDataWarehouseDevAuth",
+	"name": "SQLDataWarehousePRODAuth",
 	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
