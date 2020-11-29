@@ -2348,7 +2348,7 @@
 					"source": {
 						"type": "PostgreSqlSource",
 						"query": {
-							"value": "select\n *,\n 'AVS' as entity_source\nfrom questions.question\nwhere created_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\nor modified_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\nlimit 0",
+							"value": "select\n *,\n 'AVS' as entity_source\nfrom questions.question\nwhere created_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\nor modified_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\n",
 							"type": "Expression"
 						}
 					},
