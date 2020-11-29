@@ -324,6 +324,26 @@
 						"computeType": "General"
 					}
 				}
+			},
+			{
+				"name": "Refresh existing reports",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "StagingToDWSites",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "RefreshReports",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"annotations": []

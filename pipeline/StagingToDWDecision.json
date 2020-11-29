@@ -1,0 +1,67 @@
+{
+	"name": "StagingToDWDecision",
+	"properties": {
+		"activities": [
+			{
+				"name": "Check Audits in staging",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select  \n  (select count(*) from dbo.staging_Answers) +\n  -- (select count(*) from dbo.staging_Auditors) +\n  (select count(*) from dbo.staging_Audits) +\n  (select count(*) from dbo.staging_Clients) +\n  (select count(*) from dbo.staging_Orders) +\n  (select count(*) from dbo.staging_Questions) +\n  (select count(*) from dbo.staging_QuestionTemplates) +\n  (select count(*) from dbo.staging_Revisions) +\n  (select count(*) from dbo.staging_Sites) +\n  (select count(*) from dbo.staging_Surveys) +\n  (select count(*) from dbo.staging_Users)\n  as count",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DW",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Has audit rows",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Check Audits in staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(activity('Check Audits in staging').output.firstRow.count, 0)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Start Staging to DW Merge",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "StagingToDWEntities",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": []
+	}
+}

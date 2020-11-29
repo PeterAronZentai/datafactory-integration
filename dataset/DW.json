@@ -1,0 +1,12 @@
+{
+	"name": "DW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLDataWarehousePRODAuth",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}

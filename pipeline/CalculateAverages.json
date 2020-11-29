@@ -20,7 +20,7 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"TDailyByClientType": {
-								"TableName": "Avg_Daily_ClientType_Product"
+								"TableName": "Avg_Daily_ClientType"
 							},
 							"TClientTypes": {
 								"TableName": "ClientTypes"
@@ -51,7 +51,8 @@
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
-					}
+					},
+					"traceLevel": "Fine"
 				}
 			}
 		],

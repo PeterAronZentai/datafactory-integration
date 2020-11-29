@@ -2,7 +2,7 @@
 	"name": "ErrorOutput",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "SQLDataWarehouseDevAuth",
+			"referenceName": "SQLDataWarehousePRODAuth",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {

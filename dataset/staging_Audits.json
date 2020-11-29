@@ -2,7 +2,7 @@
 	"name": "staging_Audits",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "SQLDataWarehouseDev",
+			"referenceName": "SQLDataWarehousePRODAuth",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

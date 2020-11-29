@@ -2,7 +2,7 @@
 	"name": "staging_Users",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "SQLDataWarehouseDevAuth",
+			"referenceName": "SQLDataWarehousePRODAuth",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

@@ -1,5 +1,5 @@
 {
-	"name": "staging_Surveys",
+	"name": "ClientReports",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "SQLDataWarehousePRODAuth",
@@ -9,44 +9,47 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "row_id",
+				"name": "Id",
 				"type": "varchar"
 			},
 			{
-				"name": "id",
+				"name": "ClientId",
 				"type": "varchar"
 			},
 			{
-				"name": "internal_id",
+				"name": "ReportTemplateId",
 				"type": "varchar"
 			},
 			{
-				"name": "title",
+				"name": "ReportName",
 				"type": "nvarchar"
 			},
 			{
-				"name": "created_at",
-				"type": "datetimeoffset",
+				"name": "ReportId",
+				"type": "varchar"
+			},
+			{
+				"name": "WorkspaceId",
+				"type": "varchar"
+			},
+			{
+				"name": "Created_at",
+				"type": "datetime2",
 				"scale": 7
 			},
 			{
-				"name": "modified_at",
-				"type": "datetimeoffset",
+				"name": "Updated_at",
+				"type": "datetime2",
 				"scale": 7
 			},
 			{
-				"name": "entity_source",
-				"type": "nvarchar"
-			},
-			{
-				"name": "insert_date",
-				"type": "datetimeoffset",
-				"scale": 7
+				"name": "DataSourceId",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "staging_Surveys"
+			"table": "ClientReports"
 		}
 	}
 }

@@ -2,7 +2,7 @@
 	"name": "Questions",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "SQLDataWarehouseDevAuth",
+			"referenceName": "SQLDataWarehousePRODAuth",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
