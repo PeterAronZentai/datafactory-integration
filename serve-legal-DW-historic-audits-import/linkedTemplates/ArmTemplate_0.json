@@ -7,6 +7,14 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "serve-legal-DW-historic-audits-import"
 		},
+		"AWS AVS prod replica set_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AWS AVS prod replica set'"
+		},
+		"AWS AVS replica set_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AWS AVS replica set'"
+		},
 		"AzureBlobStorage1_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
@@ -34,6 +42,10 @@
 		"SQLDataWarehouseDevAuth_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehouseDevAuth'"
+		},
+		"SQLDataWarehousePRODAuth_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehousePRODAuth'"
 		},
 		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 			"type": "string",
@@ -94,12 +106,42 @@
 		"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
 			"type": "string",
 			"defaultValue": "serve-legal-powerbi-dev"
+		},
+		"serve_legal_reports_key_vault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://serve-legal-reports.vault.azure.net/"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AWS AVS prod replica set')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "PostgreSql",
+				"typeProperties": {
+					"connectionString": "[parameters('AWS AVS prod replica set_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AWS AVS replica set')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "PostgreSql",
+				"typeProperties": {
+					"connectionString": "[parameters('AWS AVS replica set_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -229,6 +271,32 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SQLDataWarehousePRODAuth')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('SQLDataWarehousePRODAuth_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/serve_legal_reports_key_vault')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('serve_legal_reports_key_vault_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CustomIntegrationRuntime')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -267,12 +335,30 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AVS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AWS AVS prod replica set",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "PostgreSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AWS AVS prod replica set')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Answers')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -327,7 +413,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehousePRODAuth')]"
 			]
 		},
 		{
@@ -336,7 +422,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -540,7 +626,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehousePRODAuth')]"
 			]
 		},
 		{
@@ -549,7 +635,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -725,7 +811,67 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehousePRODAuth')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ClientReports')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQLDataWarehousePRODAuth",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Id",
+						"type": "varchar"
+					},
+					{
+						"name": "ClientId",
+						"type": "varchar"
+					},
+					{
+						"name": "ReportTemplateId",
+						"type": "varchar"
+					},
+					{
+						"name": "ReportName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ReportId",
+						"type": "varchar"
+					},
+					{
+						"name": "WorkspaceId",
+						"type": "varchar"
+					},
+					{
+						"name": "Created_at",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "Updated_at",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "DataSourceId",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "ClientReports"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehousePRODAuth')]"
 			]
 		},
 		{
@@ -734,7 +880,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
+					"referenceName": "SQLDataWarehousePRODAuth",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -826,444 +972,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DimYesNo')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "bitValue",
-						"type": "bit"
-					},
-					{
-						"name": "stringValue",
-						"type": "nvarchar"
-					},
-					{
-						"name": "valueType",
-						"type": "nvarchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Dim_YesNo"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ErrorOutput')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"table_name": {
-						"type": "string",
-						"defaultValue": "t_error"
-					}
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": {
-						"value": "@dataset().table_name",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Excel1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "3 year data v1",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "3 year data v3.xlsx",
-						"container": "audits"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "Order",
-						"type": "String"
-					},
-					{
-						"name": "Client",
-						"type": "String"
-					},
-					{
-						"name": "Visit",
-						"type": "String"
-					},
-					{
-						"name": "Site",
-						"type": "String"
-					},
-					{
-						"name": "Premises Name",
-						"type": "String"
-					},
-					{
-						"name": "Address1",
-						"type": "String"
-					},
-					{
-						"name": "Address2",
-						"type": "String"
-					},
-					{
-						"name": "Address3",
-						"type": "String"
-					},
-					{
-						"name": "City",
-						"type": "String"
-					},
-					{
-						"name": "Post Code",
-						"type": "String"
-					},
-					{
-						"name": "Item to order",
-						"type": "String"
-					},
-					{
-						"name": "Actual Visit Date",
-						"type": "String"
-					},
-					{
-						"name": "Actual Visit Time",
-						"type": "String"
-					},
-					{
-						"name": "AM / PM",
-						"type": "String"
-					},
-					{
-						"name": "Pass-Fail",
-						"type": "String"
-					},
-					{
-						"name": "Pass-Fail2",
-						"type": "String"
-					},
-					{
-						"name": "Abort Reason",
-						"type": "String"
-					},
-					{
-						"name": "Extra Site 1",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Orders')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "schedule_type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "item_to_order",
-						"type": "nvarchar"
-					},
-					{
-						"name": "order_info",
-						"type": "nvarchar"
-					},
-					{
-						"name": "visits_to_be_billed",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "start_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "end_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "auditor_pay_per_audit",
-						"type": "nvarchar"
-					},
-					{
-						"name": "client_charge_per_audit",
-						"type": "nvarchar"
-					},
-					{
-						"name": "auditor_instructions",
-						"type": "nvarchar"
-					},
-					{
-						"name": "email_subject",
-						"type": "nvarchar"
-					},
-					{
-						"name": "email_survey_result",
-						"type": "nvarchar"
-					},
-					{
-						"name": "exclude_from_client_reporting",
-						"type": "bit"
-					},
-					{
-						"name": "narv_visits_only",
-						"type": "bit"
-					},
-					{
-						"name": "status",
-						"type": "nvarchar"
-					},
-					{
-						"name": "currency",
-						"type": "nvarchar"
-					},
-					{
-						"name": "client_id",
-						"type": "varchar"
-					},
-					{
-						"name": "revision_id",
-						"type": "varchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Orders"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/QuestionTemplates')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "help",
-						"type": "nvarchar"
-					},
-					{
-						"name": "title",
-						"type": "nvarchar"
-					},
-					{
-						"name": "required",
-						"type": "bit"
-					},
-					{
-						"name": "type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "config",
-						"type": "nvarchar"
-					},
-					{
-						"name": "category",
-						"type": "nvarchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "QuestionTemplates"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Questions')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehouseDevAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "help",
-						"type": "nvarchar"
-					},
-					{
-						"name": "type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "title",
-						"type": "nvarchar"
-					},
-					{
-						"name": "required",
-						"type": "bit"
-					},
-					{
-						"name": "category",
-						"type": "nvarchar"
-					},
-					{
-						"name": "config",
-						"type": "nvarchar"
-					},
-					{
-						"name": "question_template_id",
-						"type": "varchar"
-					},
-					{
-						"name": "revision_id",
-						"type": "varchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Questions"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehouseDevAuth')]"
+				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehousePRODAuth')]"
 			]
 		}
 	]

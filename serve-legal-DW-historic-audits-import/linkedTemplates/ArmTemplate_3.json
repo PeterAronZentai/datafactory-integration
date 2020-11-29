@@ -13,6 +13,430 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWOrders')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Orders",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Orders",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tschedule_type as string,\n\t\titem_to_order as string,\n\t\torder_info as string,\n\t\tvisits_to_be_billed as integer,\n\t\tstart_date as string,\n\t\tend_date as string,\n\t\tauditor_pay_per_audit as string,\n\t\tclient_charge_per_audit as string,\n\t\tauditor_instructions as string,\n\t\temail_subject as string,\n\t\temail_survey_result as string,\n\t\texclude_from_client_reporting as boolean,\n\t\tnarv_visits_only as boolean,\n\t\tstatus as string,\n\t\tcurrency as string,\n\t\tclient_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tschedule_type,\n\t\titem_to_order,\n\t\torder_info,\n\t\tvisits_to_be_billed,\n\t\tstart_date,\n\t\tend_date,\n\t\tauditor_pay_per_audit,\n\t\tclient_charge_per_audit,\n\t\tauditor_instructions,\n\t\temail_subject,\n\t\temail_survey_result,\n\t\texclude_from_client_reporting,\n\t\tnarv_visits_only,\n\t\tstatus,\n\t\tcurrency,\n\t\tclient_id,\n\t\trevision_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWQuestionTemplates')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_QuestionTemplates",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "QuestionTemplates",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "QuestionTemplates",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\ttype as string,\n\t\tconfig as string,\n\t\tcategory as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\ttype as string,\n\t\tconfig as string,\n\t\tcategory as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\ttype as string,\n\t\tconfig as string,\n\t\tcategory as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\thelp,\n\t\ttitle,\n\t\trequired,\n\t\ttype,\n\t\tconfig,\n\t\tcategory,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWQuestions')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Questions",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "staging_Questions",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Questions",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\thelp,\n\t\ttype,\n\t\ttitle,\n\t\trequired,\n\t\tcategory,\n\t\tconfig,\n\t\tquestion_template_id,\n\t\trevision_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWRevisions')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Revisions",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Revisions",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Revisions",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tstatus as string,\n\t\tname as string,\n\t\tsurvey_id as string,\n\t\tblocked as boolean,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tstatus as string,\n\t\tname as string,\n\t\tsurvey_id as string,\n\t\tblocked as boolean,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tstatus as string,\n\t\tname as string,\n\t\tsurvey_id as string,\n\t\tblocked as boolean,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tstatus,\n\t\tname,\n\t\tsurvey_id,\n\t\tblocked,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWSites')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Sites",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Sites",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\taddress_1 as string,\n\t\taddress_2 as string,\n\t\taddress_3 as string,\n\t\tcity as string,\n\t\tpost_code as string,\n\t\tcounty as string,\n\t\tcountry as string,\n\t\tdirections as string,\n\t\tapproving_notes as string,\n\t\tcode as string,\n\t\tstatus as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1 as string,\n\t\torg_level2 as string,\n\t\torg_level3 as string,\n\t\torg_level4 as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\taddress_1,\n\t\taddress_2,\n\t\taddress_3,\n\t\tcity,\n\t\tpost_code,\n\t\tcounty,\n\t\tcountry,\n\t\tdirections,\n\t\tapproving_notes,\n\t\tcode,\n\t\tstatus,\n\t\tclient_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1,\n\t\torg_level2,\n\t\torg_level3,\n\t\torg_level4,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWSurveys')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Surveys",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Surveys",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Surveys",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\ttitle as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\ttitle,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWUsers')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Users",
+								"type": "DatasetReference"
+							},
+							"name": "Staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "Users",
+								"type": "DatasetReference"
+							},
+							"name": "Existing"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Users",
+								"type": "DatasetReference"
+							},
+							"name": "Merge"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupExistingIds"
+						},
+						{
+							"name": "ExistingIds"
+						},
+						{
+							"name": "DecideMerge"
+						},
+						{
+							"name": "SortByInsertedDate"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tfirst_name as string,\n\t\tmiddle_name as string,\n\t\tlast_name as string,\n\t\temail as string,\n\t\timage as string,\n\t\tstatus as string,\n\t\tnotify_user as boolean,\n\t\trole as string,\n\t\tlast_access as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tfirst_name as string,\n\t\tmiddle_name as string,\n\t\tlast_name as string,\n\t\temail as string,\n\t\timage as string,\n\t\tstatus as string,\n\t\tnotify_user as boolean,\n\t\trole as string,\n\t\tlast_access as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tfirst_name as string,\n\t\tmiddle_name as string,\n\t\tlast_name as string,\n\t\temail as string,\n\t\timage as string,\n\t\tstatus as string,\n\t\tnotify_user as boolean,\n\t\trole as string,\n\t\tlast_access as string,\n\t\tclient_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tfirst_name,\n\t\tmiddle_name,\n\t\tlast_name,\n\t\temail,\n\t\timage,\n\t\tstatus,\n\t\tnotify_user,\n\t\trole,\n\t\tlast_access,\n\t\tclient_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SyncAVSClients')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "staging_Clients",
+								"type": "DatasetReference"
+							},
+							"name": "StagingClient"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "ExistingClients"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ErrorOutput",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "Clients",
+								"type": "DatasetReference"
+							},
+							"name": "UpsertClient"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExistingClientIds"
+						},
+						{
+							"name": "CheckIdConsistency"
+						},
+						{
+							"name": "LookupByLegacyId"
+						},
+						{
+							"name": "LookupByGuid"
+						},
+						{
+							"name": "MergeDecision"
+						},
+						{
+							"name": "ExistingLegacyClientId"
+						},
+						{
+							"name": "ExistingLegacyClients"
+						}
+					],
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StagingClient\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExistingClients\nExistingClients select(mapColumn(\n\t\te_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingClientIds\nLookupByLegacyId split(!isNull(existing_legacy_id) && (id != existing_id),\n\tdisjoint: false) ~> CheckIdConsistency@(InconsistentLegacyId, ConsistentOrNewClients)\nStagingClient, ExistingLegacyClientId lookup(legacy_id == existing_legacy_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupByLegacyId\nCheckIdConsistency@ConsistentOrNewClients, ExistingClientIds lookup(id == e_id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupByGuid\nLookupByGuid alterRow(insertIf(isNull(e_id)),\n\tupdateIf(!isNull(e_id))) ~> MergeDecision\nExistingLegacyClients select(mapColumn(\n\t\texisting_legacy_id = legacy_id,\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingLegacyClientId\nExistingClients filter(!isNull(legacy_id)) ~> ExistingLegacyClients\nCheckIdConsistency@InconsistentLegacyId sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\trow_id,\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source,\n\t\tinsert_date,\n\t\texisting_legacy_id,\n\t\texisting_id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nMergeDecision sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> UpsertClient"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/selfhosted')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -38,7 +462,7 @@
 						}
 					],
 					"transformations": [],
-					"script": "source(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+					"script": "source(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\tlegacy_id as string,\n\t\tname as string,\n\t\tlogo as string,\n\t\tfooter as string,\n\t\tclient_type as string,\n\t\tsage_reference as string,\n\t\tmanager_id as string,\n\t\tcontract_expiry as string,\n\t\tstore_locator as string,\n\t\tstatus as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\torg_level1_name as string,\n\t\torg_level2_name as string,\n\t\torg_level3_name as string,\n\t\torg_level4_name as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\tlegacy_id,\n\t\tname,\n\t\tlogo,\n\t\tfooter,\n\t\tclient_type,\n\t\tsage_reference,\n\t\tmanager_id,\n\t\tcontract_expiry,\n\t\tstore_locator,\n\t\tstatus,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\torg_level1_name,\n\t\torg_level2_name,\n\t\torg_level3_name,\n\t\torg_level4_name,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
 				}
 			},
 			"dependsOn": []
@@ -72,7 +496,7 @@
 									"Sites": {},
 									"DimYesNo": {},
 									"TDailyByClientType": {
-										"TableName": "Avg_Daily_ClientType_Product"
+										"TableName": "Avg_Daily_ClientType"
 									},
 									"TClientTypes": {
 										"TableName": "ClientTypes"
@@ -104,7 +528,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -173,7 +598,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -217,13 +643,16 @@
 							"integrationRuntime": {
 								"referenceName": "CustomIntegrationRuntime",
 								"type": "IntegrationRuntimeReference"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/SyncAVSClients')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ConvertExcelToTables')]",
@@ -264,7 +693,8 @@
 							"integrationRuntime": {
 								"referenceName": "CustomIntegrationRuntime",
 								"type": "IntegrationRuntimeReference"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -309,7 +739,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -350,7 +781,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -391,7 +823,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -428,7 +861,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -465,7 +899,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -502,7 +937,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -539,7 +975,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -576,7 +1013,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -613,7 +1051,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -650,7 +1089,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -687,7 +1127,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -724,7 +1165,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -761,13 +1203,43 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Refresh existing reports",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "StagingToDWSites",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "RefreshReports",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
 						}
 					}
 				],
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWOrders')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWQuestionTemplates')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWRevisions')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWSurveys')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWUsers')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWQuestions')]",
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/StagingToDWEntities_Partial')]",
@@ -809,7 +1281,8 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					},
 					{
@@ -839,13 +1312,3857 @@
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
-							}
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWDecision')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Check Audits in staging",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select  \n  (select count(*) from dbo.staging_Answers) +\n  -- (select count(*) from dbo.staging_Auditors) +\n  (select count(*) from dbo.staging_Audits) +\n  (select count(*) from dbo.staging_Clients) +\n  (select count(*) from dbo.staging_Orders) +\n  (select count(*) from dbo.staging_Questions) +\n  (select count(*) from dbo.staging_QuestionTemplates) +\n  (select count(*) from dbo.staging_Revisions) +\n  (select count(*) from dbo.staging_Sites) +\n  (select count(*) from dbo.staging_Surveys) +\n  (select count(*) from dbo.staging_Users)\n  as count",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Has audit rows",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Check Audits in staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@greater(activity('Check Audits in staging').output.firstRow.count, 0)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Start Staging to DW Merge",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "StagingToDWEntities",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								}
+							]
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/StagingToDWEntities')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AVS to Staging')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DW Answers get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Answers"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Answers",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Answers get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom audits.audit_answers\nwhere created_at > '@{activity('DW Answers get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Answers get date').output.firstRow.max}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "value",
+											"type": "String"
+										},
+										"sink": {
+											"name": "value",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "hidden",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "hidden",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "audit_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "audit_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "question_template_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "question_template_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Answers",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Answer set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Answers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Answers",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW Auditors get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Auditors"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Auditors",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Auditors get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom users.auditor",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "email_settings",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "email_settings",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "passport",
+											"type": "String"
+										},
+										"sink": {
+											"name": "passport",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "identification",
+											"type": "String"
+										},
+										"sink": {
+											"name": "identification",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "country",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "honorific",
+											"type": "String"
+										},
+										"sink": {
+											"name": "honorific",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "gender",
+											"type": "String"
+										},
+										"sink": {
+											"name": "gender",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "date_of_birth",
+											"type": "String"
+										},
+										"sink": {
+											"name": "date_of_birth",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "marital_status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "marital_status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "occupation",
+											"type": "String"
+										},
+										"sink": {
+											"name": "occupation",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ni_pps",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ni_pps",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "home_address_1",
+											"type": "String"
+										},
+										"sink": {
+											"name": "home_address_1",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "home_address_2",
+											"type": "String"
+										},
+										"sink": {
+											"name": "home_address_2",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "home_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "home_city",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "home_post_code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "home_post_code",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "home_county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "home_county",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "term_address_1",
+											"type": "String"
+										},
+										"sink": {
+											"name": "term_address_1",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "term_address_2",
+											"type": "String"
+										},
+										"sink": {
+											"name": "term_address_2",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "term_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "term_city",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "term_post_code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "term_post_code",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "term_county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "term_county",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "mobile_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "mobile_number",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "home_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "home_number",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "notes",
+											"type": "String"
+										},
+										"sink": {
+											"name": "notes",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "hear_about_us",
+											"type": "String"
+										},
+										"sink": {
+											"name": "hear_about_us",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "hear_about_us_details",
+											"type": "String"
+										},
+										"sink": {
+											"name": "hear_about_us_details",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "recommended_by",
+											"type": "String"
+										},
+										"sink": {
+											"name": "recommended_by",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "email_communication",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "email_communication",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "servelegal_community",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "servelegal_community",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "card_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "card_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "bank_country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "bank_country",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "account_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "account_number",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "sort_code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "sort_code",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "swift_code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "swift_code",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "iban_number",
+											"type": "String"
+										},
+										"sink": {
+											"name": "iban_number",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "circumstances",
+											"type": "String"
+										},
+										"sink": {
+											"name": "circumstances",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "student_loans",
+											"type": "String"
+										},
+										"sink": {
+											"name": "student_loans",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "access_to_car",
+											"type": "String"
+										},
+										"sink": {
+											"name": "access_to_car",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "why_servelegal",
+											"type": "String"
+										},
+										"sink": {
+											"name": "why_servelegal",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "about_yourself",
+											"type": "String"
+										},
+										"sink": {
+											"name": "about_yourself",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "travel_outside",
+											"type": "String"
+										},
+										"sink": {
+											"name": "travel_outside",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "auditor_status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "auditor_status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "user_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Auditors",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Audits get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Audits"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Audits",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Audits get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n jsonb_extract_path_text(survey_result::jsonb, '0', 'result') as survey_result_value,\n 'AVS' as entity_source\nfrom audits.audit\nwhere created_at > '@{activity('DW Audits get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Audits get date').output.firstRow.max}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "query_notes",
+											"type": "String"
+										},
+										"sink": {
+											"name": "query_notes",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "query_category",
+											"type": "String"
+										},
+										"sink": {
+											"name": "query_category",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "survey_result_value",
+											"type": "String"
+										},
+										"sink": {
+											"name": "survey_result",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "visit_info",
+											"type": "String"
+										},
+										"sink": {
+											"name": "visit_info",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "submitted_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "submitted_date",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "approval_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "approval_date",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "deadline_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "deadline_date",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "date_of_visit",
+											"type": "String"
+										},
+										"sink": {
+											"name": "date_of_visit",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "purchase_cost",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "purchase_cost",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "allowance",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "allowance",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "mileage",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "mileage",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "entrance_charge",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "entrance_charge",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "travel_expenses",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "travel_expenses",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "travel_expenses_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "travel_expenses_type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "travel_expenses_description",
+											"type": "String"
+										},
+										"sink": {
+											"name": "travel_expenses_description",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "reclaimable_expenses",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "reclaimable_expenses",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "reclaimable_expenses_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "reclaimable_expenses_type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "reclaimable_expenses_description",
+											"type": "String"
+										},
+										"sink": {
+											"name": "reclaimable_expenses_description",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "paid",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "paid",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "batched",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "batched",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "payroll_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "payroll_date",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "pay_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "pay_date",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "email_note",
+											"type": "String"
+										},
+										"sink": {
+											"name": "email_note",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "order_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "order_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "site_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "site_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "approved_by_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "approved_by_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "auditor_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "auditor_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "item_to_order",
+											"type": "String"
+										},
+										"sink": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "auditor_instructions",
+											"type": "String"
+										},
+										"sink": {
+											"name": "auditor_instructions",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "auditor_pay_per_audit",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "auditor_pay_per_audit",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "approving_notes",
+											"type": "String"
+										},
+										"sink": {
+											"name": "approving_notes",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Audits",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Audits set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Audits",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Audits",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW Clients get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Clients"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Clients",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Clients get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom clients.client\nwhere created_at > '@{activity('DW Clients get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Clients get date').output.firstRow.max}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "legacy_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "legacy_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "logo",
+											"type": "String"
+										},
+										"sink": {
+											"name": "logo",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "footer",
+											"type": "String"
+										},
+										"sink": {
+											"name": "footer",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "client_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "client_type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "sage_reference",
+											"type": "String"
+										},
+										"sink": {
+											"name": "sage_reference",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "manager_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "manager_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "contract_expiry",
+											"type": "String"
+										},
+										"sink": {
+											"name": "contract_expiry",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "store_locator",
+											"type": "String"
+										},
+										"sink": {
+											"name": "store_locator",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Clients",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Clients set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Clients",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Clients",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW Orders get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Orders"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Orders",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Orders get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom orders.order\nwhere created_at > '@{activity('DW Orders get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Orders get date').output.firstRow.max}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "schedule_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "schedule_type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "item_to_order",
+											"type": "String"
+										},
+										"sink": {
+											"name": "item_to_order",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "order_info",
+											"type": "String"
+										},
+										"sink": {
+											"name": "order_info",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "visits_to_be_billed",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "visits_to_be_billed",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "start_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "start_date",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "end_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "end_date",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "auditor_pay_per_audit",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "auditor_pay_per_audit",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "client_charge_per_audit",
+											"type": "Single"
+										},
+										"sink": {
+											"name": "client_charge_per_audit",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "auditor_instructions",
+											"type": "String"
+										},
+										"sink": {
+											"name": "auditor_instructions",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "email_subject",
+											"type": "String"
+										},
+										"sink": {
+											"name": "email_subject",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "email_survey_result",
+											"type": "String"
+										},
+										"sink": {
+											"name": "email_survey_result",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "exclude_from_client_reporting",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "exclude_from_client_reporting",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "narv_visits_only",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "narv_visits_only",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "currency",
+											"type": "String"
+										},
+										"sink": {
+											"name": "currency",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "client_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "client_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "revision_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "revision_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Orders",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Orders set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Orders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Orders",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW Questions get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Questions"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Questions",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Questions get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom surveys.revision_questions\nwhere created_at > '@{activity('DW Questions get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Questions get date').output.firstRow.max}'\nlimit 0",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "help",
+											"type": "String"
+										},
+										"sink": {
+											"name": "help",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "title",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "required",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "required",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "category",
+											"type": "String"
+										},
+										"sink": {
+											"name": "category",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "config",
+											"type": "String"
+										},
+										"sink": {
+											"name": "config",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "question_template_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "question_template_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "revision_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "revision_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Questions",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Questions set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Questions",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Questions",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW QuestionTemplates get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "QuestionTemplates"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy QuestionTemplates",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW QuestionTemplates get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom questions.question\nwhere created_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\nor modified_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\nlimit 0",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "help",
+											"type": "String"
+										},
+										"sink": {
+											"name": "help",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "title",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "required",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "required",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "config",
+											"type": "String"
+										},
+										"sink": {
+											"name": "config",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category",
+											"type": "String"
+										},
+										"sink": {
+											"name": "category",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_QuestionTemplates",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW QuestionTemplates set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy QuestionTemplates",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "QuestionTemplates",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW Revisions get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Revisions"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Revisions",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Revisions get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom surveys.revision\nwhere created_at > '@{activity('DW Revisions get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Revisions get date').output.firstRow.max}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "survey_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "survey_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "blocked",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "blocked",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Revisions",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Revisions set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Revisions",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Revisions",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW Sites get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Sites"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Sites",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Sites get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n coalesce(\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '0', 'org_level_1'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '1', 'org_level_1'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '2', 'org_level_1'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '3', 'org_level_1')\n ) as org_level1,\n  coalesce(\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '0', 'org_level_2'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '1', 'org_level_2'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '2', 'org_level_2'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '3', 'org_level_2')\n ) as org_level2,\n  coalesce(\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '0', 'org_level_3'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '1', 'org_level_3'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '2', 'org_level_3'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '3', 'org_level_3')\n ) as org_level3,\n  coalesce(\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '0', 'org_level_4'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '1', 'org_level_4'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '2', 'org_level_4'),\n\t jsonb_extract_path_text(organisation_level_code::jsonb, '3', 'org_level_4')\n ) as org_level4,\n 'AVS' as entity_source\nfrom sites.site\nwhere created_at > '@{activity('DW Sites get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Sites get date').output.firstRow.max}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "legacy_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "legacy_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "address_1",
+											"type": "String"
+										},
+										"sink": {
+											"name": "address_1",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "address_2",
+											"type": "String"
+										},
+										"sink": {
+											"name": "address_2",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "address_3",
+											"type": "String"
+										},
+										"sink": {
+											"name": "address_3",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "city",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "post_code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "post_code",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "county",
+											"type": "String"
+										},
+										"sink": {
+											"name": "county",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "country",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "directions",
+											"type": "String"
+										},
+										"sink": {
+											"name": "directions",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "approving_notes",
+											"type": "String"
+										},
+										"sink": {
+											"name": "approving_notes",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "code",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "client_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "client_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "org_level1",
+											"type": "String"
+										},
+										"sink": {
+											"name": "org_level1",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "org_level2",
+											"type": "String"
+										},
+										"sink": {
+											"name": "org_level2",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "org_level3",
+											"type": "String"
+										},
+										"sink": {
+											"name": "org_level3",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "org_level4",
+											"type": "String"
+										},
+										"sink": {
+											"name": "org_level4",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Sites",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Sites set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Sites",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Sites",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW Surveys get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Surveys"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Surveys",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Surveys get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom surveys.survey\nwhere created_at > '@{activity('DW Surveys get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Surveys get date').output.firstRow.max}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "title",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Surveys",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Surveys set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Surveys",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Surveys",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DW Users get date",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Truncate Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[sp_sync_get_update_date]",
+								"storedProcedureParameters": {
+									"tableName": {
+										"type": "String",
+										"value": "Users"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy Users",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DW Users get date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "PostgreSqlSource",
+								"query": {
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom users.user\nwhere created_at > '@{activity('DW Users get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Users get date').output.firstRow.max}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "internal_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "internal_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "first_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "first_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "middle_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "middle_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "last_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "last_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "email",
+											"type": "String"
+										},
+										"sink": {
+											"name": "email",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "image",
+											"type": "String"
+										},
+										"sink": {
+											"name": "image",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "notify_user",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "notify_user",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "role",
+											"type": "String"
+										},
+										"sink": {
+											"name": "role",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "last_access",
+											"type": "String"
+										},
+										"sink": {
+											"name": "last_access",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "client_id",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "client_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "created_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "created_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "modified_at",
+											"type": "String"
+										},
+										"sink": {
+											"name": "modified_at",
+											"type": "DateTimeOffset",
+											"physicalType": "datetimeoffset"
+										}
+									},
+									{
+										"source": {
+											"name": "entity_source",
+											"type": "String"
+										},
+										"sink": {
+											"name": "entity_source",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AVS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staging_Users",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "DW Users set date",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy Users",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_sync_set_update_date]",
+							"storedProcedureParameters": {
+								"tableName": {
+									"value": "Users",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Truncate Staging",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[sp_truncate_staging_tables]"
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLDataWarehousePRODAuth",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Decision to continue",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "DW Answer set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Auditors",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW Audits set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW Clients set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW Orders set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW Questions set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW QuestionTemplates set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW Revisions set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW Sites set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW Surveys set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "DW Users set date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "StagingToDWDecision",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2020-09-24T14:31:46Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/StagingToDWDecision')]"
+			]
 		}
 	]
 }

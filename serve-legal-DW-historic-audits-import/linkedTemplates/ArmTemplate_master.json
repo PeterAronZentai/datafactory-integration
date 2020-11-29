@@ -7,6 +7,14 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "serve-legal-DW-historic-audits-import"
 		},
+		"AWS AVS prod replica set_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AWS AVS prod replica set'"
+		},
+		"AWS AVS replica set_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AWS AVS replica set'"
+		},
 		"AzureBlobStorage1_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
@@ -34,6 +42,10 @@
 		"SQLDataWarehouseDevAuth_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehouseDevAuth'"
+		},
+		"SQLDataWarehousePRODAuth_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehousePRODAuth'"
 		},
 		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 			"type": "string",
@@ -95,6 +107,10 @@
 			"type": "string",
 			"defaultValue": "serve-legal-powerbi-dev"
 		},
+		"serve_legal_reports_key_vault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://serve-legal-reports.vault.azure.net/"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -122,6 +138,12 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AWS AVS prod replica set_connectionString": {
+						"value": "[parameters('AWS AVS prod replica set_connectionString')]"
+					},
+					"AWS AVS replica set_connectionString": {
+						"value": "[parameters('AWS AVS replica set_connectionString')]"
+					},
 					"AzureBlobStorage1_connectionString": {
 						"value": "[parameters('AzureBlobStorage1_connectionString')]"
 					},
@@ -142,6 +164,9 @@
 					},
 					"SQLDataWarehouseDevAuth_connectionString": {
 						"value": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
+					},
+					"SQLDataWarehousePRODAuth_connectionString": {
+						"value": "[parameters('SQLDataWarehousePRODAuth_connectionString')]"
 					},
 					"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 						"value": "[parameters('AzureDataLakeAnalytics1_properties_typeProperties_accountName')]"
@@ -187,6 +212,9 @@
 					},
 					"AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName": {
 						"value": "[parameters('AzureDataLakeStore1Auth_properties_typeProperties_resourceGroupName')]"
+					},
+					"serve_legal_reports_key_vault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('serve_legal_reports_key_vault_properties_typeProperties_baseUrl')]"
 					}
 				}
 			},
