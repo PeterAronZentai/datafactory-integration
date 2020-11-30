@@ -210,7 +210,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Answers",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1331,7 +1331,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Audits",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1622,7 +1622,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Clients",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1990,7 +1990,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Orders",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -2259,7 +2259,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Questions",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -2506,7 +2506,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy QuestionTemplates",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -2731,7 +2731,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Revisions",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -3110,7 +3110,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Sites",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -3302,7 +3302,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Surveys",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -3593,7 +3593,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Copy Users",
+						"activity": "Decision to continue",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -3646,67 +3646,61 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "DW Answer set date",
+						"activity": "Copy Answers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Audits",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Clients",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Orders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Questions",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Revisions",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Sites",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Surveys",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Users",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					},
 					{
 						"activity": "Copy Auditors",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW Audits set date",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW Clients set date",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW Orders set date",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW Questions set date",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW QuestionTemplates set date",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW Revisions set date",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW Sites set date",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW Surveys set date",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "DW Users set date",
 						"dependencyConditions": [
 							"Succeeded"
 						]
