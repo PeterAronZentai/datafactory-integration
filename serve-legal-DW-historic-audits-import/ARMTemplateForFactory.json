@@ -333,7 +333,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Answers",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1014,7 +1014,7 @@
 							"source": {
 								"type": "PostgreSqlSource",
 								"query": {
-									"value": "select\n *,\n jsonb_extract_path_text(survey_result::jsonb, '0', 'result') as survey_result_value,\n 'AVS' as entity_source\nfrom audits.audit\nwhere created_at > '@{activity('DW Audits get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Audits get date').output.firstRow.max}'",
+									"value": "select\n *,\n jsonb_extract_path_text(survey_result::jsonb, '0', 'result') as survey_result_value,\n 'AVS' as entity_source,\n null as allowance\nfrom audits.audit\nwhere created_at > '@{activity('DW Audits get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Audits get date').output.firstRow.max}'",
 									"type": "Expression"
 								}
 							},
@@ -1460,7 +1460,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Audits",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1754,7 +1754,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Clients",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2125,7 +2125,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Orders",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2397,7 +2397,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Questions",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2487,7 +2487,7 @@
 							"source": {
 								"type": "PostgreSqlSource",
 								"query": {
-									"value": "select\n *,\n 'AVS' as entity_source\nfrom questions.question\nwhere created_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\nor modified_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\nlimit 0",
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom questions.question\nwhere created_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\nor modified_at > '@{activity('DW QuestionTemplates get date').output.firstRow.max}'\n",
 									"type": "Expression"
 								}
 							},
@@ -2647,7 +2647,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy QuestionTemplates",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2875,7 +2875,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Revisions",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3257,7 +3257,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Sites",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3452,7 +3452,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Surveys",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3746,7 +3746,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy Users",
+								"activity": "Decision to continue",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3799,67 +3799,61 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "DW Answer set date",
+								"activity": "Copy Answers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Audits",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Clients",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Orders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Questions",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Revisions",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Sites",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Surveys",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy Users",
 								"dependencyConditions": [
 									"Succeeded"
 								]
 							},
 							{
 								"activity": "Copy Auditors",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW Audits set date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW Clients set date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW Orders set date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW Questions set date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW QuestionTemplates set date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW Revisions set date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW Sites set date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW Surveys set date",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "DW Users set date",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -12851,7 +12845,7 @@
 						},
 						{
 							"dataset": {
-								"referenceName": "staging_Questions",
+								"referenceName": "Questions",
 								"type": "DatasetReference"
 							},
 							"name": "Existing"
@@ -12880,7 +12874,7 @@
 							"name": "SortByInsertedDate"
 						}
 					],
-					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\thelp,\n\t\ttype,\n\t\ttitle,\n\t\trequired,\n\t\tcategory,\n\t\tconfig,\n\t\tquestion_template_id,\n\t\trevision_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
+					"script": "source(output(\n\t\trow_id as string,\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string,\n\t\tinsert_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Staging\nsource(output(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Existing\nSortByInsertedDate, ExistingIds lookup(id == existing_id,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(existing_id, true),\n\tbroadcast: 'auto')~> LookupExistingIds\nExisting select(mapColumn(\n\t\texisting_id = id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ExistingIds\nLookupExistingIds alterRow(insertIf(isNull(existing_id)),\n\tupdateIf(!isNull(existing_id))) ~> DecideMerge\nStaging sort(asc(insert_date, true)) ~> SortByInsertedDate\nDecideMerge sink(input(\n\t\tid as string,\n\t\tinternal_id as string,\n\t\thelp as string,\n\t\ttype as string,\n\t\ttitle as string,\n\t\trequired as boolean,\n\t\tcategory as string,\n\t\tconfig as string,\n\t\tquestion_template_id as string,\n\t\trevision_id as string,\n\t\tcreated_at as string,\n\t\tmodified_at as string,\n\t\tentity_source as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid,\n\t\tinternal_id,\n\t\thelp,\n\t\ttype,\n\t\ttitle,\n\t\trequired,\n\t\tcategory,\n\t\tconfig,\n\t\tquestion_template_id,\n\t\trevision_id,\n\t\tcreated_at,\n\t\tmodified_at,\n\t\tentity_source\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Merge"
 				}
 			},
 			"dependsOn": [
