@@ -791,6 +791,88 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/StagingToDWEntities_Partial')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "StagingToDWSites",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "StagingToDWClients",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "StagingToDWSites",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Staging": {},
+									"Existing": {},
+									"Merge": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "StagingToDWClients",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "StagingToDWClients",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Staging": {},
+									"Existing": {},
+									"Merge": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/StagingToDWEntities')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1212,7 +1294,7 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "StagingToDWSites",
+								"activity": "Calculate Avarages",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1222,6 +1304,27 @@
 						"typeProperties": {
 							"pipeline": {
 								"referenceName": "RefreshReports",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Calculate Avarages",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "StagingToDWSites",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "CalculateAverages",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -1238,89 +1341,8 @@
 				"[concat(variables('factoryId'), '/dataflows/StagingToDWSurveys')]",
 				"[concat(variables('factoryId'), '/dataflows/StagingToDWUsers')]",
 				"[concat(variables('factoryId'), '/dataflows/StagingToDWQuestions')]",
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/StagingToDWEntities_Partial')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "StagingToDWSites",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "StagingToDWClients",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "StagingToDWSites",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "StagingToDWClients",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "StagingToDWClients",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Staging": {},
-									"Existing": {},
-									"Merge": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]"
+				"[concat(variables('factoryId'), '/dataflows/StagingToDWSites')]",
+				"[concat(variables('factoryId'), '/pipelines/CalculateAverages')]"
 			]
 		},
 		{
