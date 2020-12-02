@@ -887,7 +887,7 @@
 					"source": {
 						"type": "PostgreSqlSource",
 						"query": {
-							"value": "select\n *,\n jsonb_extract_path_text(survey_result::jsonb, '0', 'result') as survey_result_value,\n 'AVS' as entity_source\nfrom audits.audit\nwhere created_at > '@{activity('DW Audits get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Audits get date').output.firstRow.max}'",
+							"value": "select\n *,\n jsonb_extract_path_text(survey_result::jsonb, '0', 'result') as survey_result_value,\n 'AVS' as entity_source,\n null as allowance\nfrom audits.audit\nwhere created_at > '@{activity('DW Audits get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Audits get date').output.firstRow.max}'",
 							"type": "Expression"
 						}
 					},
