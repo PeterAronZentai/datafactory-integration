@@ -1,0 +1,24 @@
+{
+	"name": "every 3 hour run",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "AVS to Staging",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 3,
+				"startTime": "2020-12-02T21:00:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
