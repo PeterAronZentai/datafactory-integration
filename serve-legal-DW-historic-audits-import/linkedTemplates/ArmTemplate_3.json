@@ -5157,6 +5157,36 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/StagingToDWDecision')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/every 3 hour run')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "AVS to Staging",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 3,
+						"startTime": "2020-12-02T21:00:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/AVS to Staging')]"
+			]
 		}
 	]
 }
