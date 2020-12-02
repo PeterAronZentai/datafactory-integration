@@ -5201,8 +5201,8 @@
 					"recurrence": {
 						"frequency": "Hour",
 						"interval": 3,
-						"startTime": "2020-12-02T21:00:00Z",
-						"timeZone": "UTC"
+						"startTime": "2020-12-02T21:00:00",
+						"timeZone": "GMT Standard Time"
 					}
 				}
 			},
