@@ -11940,7 +11940,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/every 3 hour run')]",
+			"name": "[concat(parameters('factoryName'), '/every 12 hour run')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -11959,7 +11959,7 @@
 				"typeProperties": {
 					"recurrence": {
 						"frequency": "Hour",
-						"interval": 3,
+						"interval": 12,
 						"startTime": "2020-12-02T21:00:00",
 						"timeZone": "GMT Standard Time"
 					}
