@@ -7,17 +7,9 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "serve-legal-DW-historic-audits-import"
 		},
-		"AWS AVS prod replica set_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AWS AVS prod replica set'"
-		},
 		"AWS AVS replica set_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AWS AVS replica set'"
-		},
-		"AzureBlobStorage1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
 		"AzureDataLakeAnalytics1_servicePrincipalKey": {
 			"type": "secureString",
@@ -42,6 +34,14 @@
 		"SQLDataWarehouseDevAuth_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SQLDataWarehouseDevAuth'"
+		},
+		"AWS AVS prod replica set_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AWS AVS prod replica set'"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
 		"SQLDataWarehousePRODAuth_connectionString": {
 			"type": "secureString",
@@ -117,19 +117,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/AWS AVS prod replica set')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "PostgreSql",
-				"typeProperties": {
-					"connectionString": "[parameters('AWS AVS prod replica set_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AWS AVS replica set')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -138,19 +125,6 @@
 				"type": "PostgreSql",
 				"typeProperties": {
 					"connectionString": "[parameters('AWS AVS replica set_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -271,19 +245,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SQLDataWarehousePRODAuth')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('SQLDataWarehousePRODAuth_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/serve_legal_reports_key_vault')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -333,6 +294,129 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ttl10-pipeline')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azure_dw_importing')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azure_dw_importing_noparam')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AWS AVS prod replica set')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "PostgreSql",
+				"typeProperties": {
+					"connectionString": "[parameters('AWS AVS prod replica set_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ttl10-pipeline",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ttl10-pipeline')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ttl10-pipeline",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ttl10-pipeline')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLDataWarehousePRODAuth')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('SQLDataWarehousePRODAuth_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ttl10-pipeline",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ttl10-pipeline')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AVS')]",
@@ -623,352 +707,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "Auditors"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehousePRODAuth')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Audits')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehousePRODAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "query_notes",
-						"type": "nvarchar"
-					},
-					{
-						"name": "query_category",
-						"type": "nvarchar"
-					},
-					{
-						"name": "survey_result",
-						"type": "nvarchar"
-					},
-					{
-						"name": "visit_info",
-						"type": "nvarchar"
-					},
-					{
-						"name": "submitted_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "approval_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "deadline_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "date_of_visit",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "purchase_cost",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "allowance",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "mileage",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "entrance_charge",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "travel_expenses",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "travel_expenses_type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "travel_expenses_description",
-						"type": "nvarchar"
-					},
-					{
-						"name": "reclaimable_expenses",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "reclaimable_expenses_type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "reclaimable_expenses_description",
-						"type": "nvarchar"
-					},
-					{
-						"name": "paid",
-						"type": "bit"
-					},
-					{
-						"name": "batched",
-						"type": "bit"
-					},
-					{
-						"name": "payroll_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "pay_date",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "email_note",
-						"type": "nvarchar"
-					},
-					{
-						"name": "status",
-						"type": "nvarchar"
-					},
-					{
-						"name": "order_id",
-						"type": "varchar"
-					},
-					{
-						"name": "site_id",
-						"type": "varchar"
-					},
-					{
-						"name": "approved_by_id",
-						"type": "varchar"
-					},
-					{
-						"name": "auditor_id",
-						"type": "varchar"
-					},
-					{
-						"name": "item_to_order",
-						"type": "nvarchar"
-					},
-					{
-						"name": "auditor_instructions",
-						"type": "nvarchar"
-					},
-					{
-						"name": "auditor_pay_per_audit",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "approving_notes",
-						"type": "nvarchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Audits"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehousePRODAuth')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ClientReports')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehousePRODAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "Id",
-						"type": "varchar"
-					},
-					{
-						"name": "ClientId",
-						"type": "varchar"
-					},
-					{
-						"name": "ReportTemplateId",
-						"type": "varchar"
-					},
-					{
-						"name": "ReportName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ReportId",
-						"type": "varchar"
-					},
-					{
-						"name": "WorkspaceId",
-						"type": "varchar"
-					},
-					{
-						"name": "Created_at",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "Updated_at",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "DataSourceId",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "ClientReports"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQLDataWarehousePRODAuth')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Clients')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SQLDataWarehousePRODAuth",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "varchar"
-					},
-					{
-						"name": "internal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "legacy_id",
-						"type": "varchar"
-					},
-					{
-						"name": "name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "logo",
-						"type": "nvarchar"
-					},
-					{
-						"name": "footer",
-						"type": "nvarchar"
-					},
-					{
-						"name": "client_type",
-						"type": "nvarchar"
-					},
-					{
-						"name": "sage_reference",
-						"type": "nvarchar"
-					},
-					{
-						"name": "manager_id",
-						"type": "varchar"
-					},
-					{
-						"name": "contract_expiry",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "store_locator",
-						"type": "nvarchar"
-					},
-					{
-						"name": "status",
-						"type": "nvarchar"
-					},
-					{
-						"name": "created_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "modified_at",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "org_level1_name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level2_name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level3_name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "org_level4_name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "entity_source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Clients"
 				}
 			},
 			"dependsOn": [

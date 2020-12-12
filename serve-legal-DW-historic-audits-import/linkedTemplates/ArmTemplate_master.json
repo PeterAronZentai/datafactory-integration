@@ -138,14 +138,8 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"AWS AVS prod replica set_connectionString": {
-						"value": "[parameters('AWS AVS prod replica set_connectionString')]"
-					},
 					"AWS AVS replica set_connectionString": {
 						"value": "[parameters('AWS AVS replica set_connectionString')]"
-					},
-					"AzureBlobStorage1_connectionString": {
-						"value": "[parameters('AzureBlobStorage1_connectionString')]"
 					},
 					"AzureDataLakeAnalytics1_servicePrincipalKey": {
 						"value": "[parameters('AzureDataLakeAnalytics1_servicePrincipalKey')]"
@@ -164,6 +158,12 @@
 					},
 					"SQLDataWarehouseDevAuth_connectionString": {
 						"value": "[parameters('SQLDataWarehouseDevAuth_connectionString')]"
+					},
+					"AWS AVS prod replica set_connectionString": {
+						"value": "[parameters('AWS AVS prod replica set_connectionString')]"
+					},
+					"AzureBlobStorage1_connectionString": {
+						"value": "[parameters('AzureBlobStorage1_connectionString')]"
 					},
 					"SQLDataWarehousePRODAuth_connectionString": {
 						"value": "[parameters('SQLDataWarehousePRODAuth_connectionString')]"
@@ -278,6 +278,26 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'serve-legal-DW-historic-audits-import_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "serve-legal-DW-historic-audits-import_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'serve-legal-DW-historic-audits-import_ArmTemplate_3')]"
 			]
 		}
 	]

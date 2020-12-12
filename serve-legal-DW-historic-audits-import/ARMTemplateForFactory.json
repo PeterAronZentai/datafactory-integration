@@ -3949,9 +3949,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -3960,7 +3960,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/CalculateAverages')]"
+				"[concat(variables('factoryId'), '/dataflows/CalculateAverages')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/ttl10-pipeline')]"
 			]
 		},
 		{
@@ -4789,9 +4790,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -4827,9 +4828,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -4865,9 +4866,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -4903,9 +4904,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -4941,9 +4942,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -4979,9 +4980,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -5017,9 +5018,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -5055,9 +5056,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -5093,9 +5094,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -5131,9 +5132,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -5169,9 +5170,9 @@
 								}
 							},
 							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"integrationRuntime": {
+								"referenceName": "ttl10-pipeline",
+								"type": "IntegrationRuntimeReference"
 							},
 							"traceLevel": "Fine"
 						}
@@ -5223,6 +5224,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/StagingToDWOrders')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/ttl10-pipeline')]",
 				"[concat(variables('factoryId'), '/dataflows/StagingToDWAuditors')]",
 				"[concat(variables('factoryId'), '/dataflows/StagingToDWQuestionTemplates')]",
 				"[concat(variables('factoryId'), '/dataflows/StagingToDWRevisions')]",
@@ -11768,9 +11770,15 @@
 				"type": "PostgreSql",
 				"typeProperties": {
 					"connectionString": "[parameters('AWS AVS prod replica set_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ttl10-pipeline",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ttl10-pipeline')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AWS AVS replica set')]",
@@ -11794,9 +11802,15 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ttl10-pipeline",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ttl10-pipeline')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureDataLakeAnalytics1')]",
@@ -11922,9 +11936,15 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('SQLDataWarehousePRODAuth_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ttl10-pipeline",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ttl10-pipeline')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/serve_legal_reports_key_vault')]",
@@ -13254,6 +13274,25 @@
 				"[concat(variables('factoryId'), '/datasets/Clients')]",
 				"[concat(variables('factoryId'), '/datasets/ErrorOutput')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ttl10-pipeline')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10
+						}
+					}
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }
