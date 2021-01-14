@@ -184,7 +184,7 @@
 							"source": {
 								"type": "PostgreSqlSource",
 								"query": {
-									"value": "select\n *,\n 'AVS' as entity_source\nfrom audits.audit_answers\nwhere created_at > '@{activity('DW Answers get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Answers get date').output.firstRow.max}'",
+									"value": "select\n *,\n 'AVS' as entity_source\nfrom audits.audit_answers\nwhere created_at > '@{activity('DW Answers get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Answers get date').output.firstRow.max}'\nlimit 0",
 									"type": "Expression"
 								}
 							},
@@ -12028,6 +12028,25 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ttl10-pipeline')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CalculateAverages')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -13274,25 +13293,6 @@
 				"[concat(variables('factoryId'), '/datasets/Clients')]",
 				"[concat(variables('factoryId'), '/datasets/ErrorOutput')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ttl10-pipeline')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "AutoResolve",
-						"dataFlowProperties": {
-							"computeType": "General",
-							"coreCount": 8,
-							"timeToLive": 10
-						}
-					}
-				}
-			},
-			"dependsOn": []
 		}
 	]
 }
