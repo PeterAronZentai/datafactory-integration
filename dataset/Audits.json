@@ -170,6 +170,10 @@
 			{
 				"name": "entity_source",
 				"type": "nvarchar"
+			},
+			{
+				"name": "survey_result_secondary",
+				"type": "nvarchar"
 			}
 		],
 		"typeProperties": {

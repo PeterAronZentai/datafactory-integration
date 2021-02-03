@@ -887,7 +887,7 @@
 					"source": {
 						"type": "PostgreSqlSource",
 						"query": {
-							"value": "select\n *,\n jsonb_extract_path_text(survey_result::jsonb, '0', 'result') as survey_result_value,\n 'AVS' as entity_source,\n null as allowance,\n null as briefing_documents\nfrom audits.audit\nwhere created_at > '@{activity('DW Audits get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Audits get date').output.firstRow.max}'",
+							"value": "select\n *,\n jsonb_extract_path_text(survey_result::jsonb, '0', 'result') as survey_result_value,\n jsonb_extract_path_text(survey_result::jsonb, '1', 'result') as survey_result_value_secondary,\n 'AVS' as entity_source,\n null as allowance,\n null as briefing_documents\nfrom audits.audit\nwhere created_at > '@{activity('DW Audits get date').output.firstRow.max}'\nor modified_at > '@{activity('DW Audits get date').output.firstRow.max}'",
 							"type": "Expression"
 						}
 					},
@@ -1022,7 +1022,7 @@
 							{
 								"source": {
 									"name": "allowance",
-									"type": "Single"
+									"type": "String"
 								},
 								"sink": {
 									"name": "allowance",
@@ -1301,6 +1301,17 @@
 								},
 								"sink": {
 									"name": "entity_source",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "survey_result_value_secondary",
+									"type": "String"
+								},
+								"sink": {
+									"name": "survey_result_secondary",
 									"type": "String",
 									"physicalType": "nvarchar"
 								}
